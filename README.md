@@ -8,3 +8,5 @@ Este proyecto forma parte del curso de Programacion con Patrones.
 Jose Pablo Navarro Rodriguez
 
 Isabella Nassar Míguez
+
+Cristopher Leiton Duran
