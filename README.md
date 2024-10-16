@@ -12,3 +12,5 @@ Isabella Nassar Míguez
 Cristopher Leiton Duran
 
 Fabiola Zuñiga Vargas
+
+Diego Alonso Selva Arrieta
