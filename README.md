@@ -10,3 +10,5 @@ Jose Pablo Navarro Rodriguez
 Isabella Nassar Míguez
 
 Cristopher Leiton Duran
+
+Fabiola Zuñiga Vargas
