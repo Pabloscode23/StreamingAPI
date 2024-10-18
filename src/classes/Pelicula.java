@@ -27,6 +27,7 @@ public class Pelicula {
     public int getCodigo() {
         return codigo;
     }
+    
     /**
      * Obtiene el nombre pelicula
      *
@@ -35,6 +36,7 @@ public class Pelicula {
     public String getNombre() {
         return nombre;
     }
+    
     /**
      * Establece el codigo pelicula
      *
@@ -43,6 +45,7 @@ public class Pelicula {
     public void setCodigo(int codigo) {
         this.codigo = codigo;
     }
+    
     /**
      * Establece el nombresuario.
      *
@@ -51,6 +54,7 @@ public class Pelicula {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    
     /**
      * Devuelve una representación en forma de cadena del objeto Pelicula
      *
