@@ -1,3 +1,5 @@
+package classes;
+
 /**
  * La clase Suscripcion: suscripción de un usuario a un servicio
  *

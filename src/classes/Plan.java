@@ -1,3 +1,5 @@
+package classes;
+
 /**
  * La clase que representa un plan de suscripción disponible
  *
