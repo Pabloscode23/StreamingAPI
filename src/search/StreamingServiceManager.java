@@ -1,25 +1,48 @@
 package search;
 
 public class StreamingServiceManager {
+    private static StreamingServiceManager instancia;
+    private StreamingService servicioActual;
 
-    // Paso 1: Crear una variable estática privada para almacenar la única instancia
-    private static StreamingServiceManager instance;
-
-    // Paso 2: Hacer el constructor privado para prevenir la instanciación desde fuera de la clase
     private StreamingServiceManager() {
-        // Código de inicialización, si es necesario
     }
 
-    // Paso 3: Proveer un método estático público para obtener la instancia de la clase
-    public static StreamingServiceManager getInstance() {
-        if (instance == null) {
-            instance = new StreamingServiceManager();
+    public static StreamingServiceManager getInstancia() {
+        if (instancia == null) {
+            instancia = new StreamingServiceManager();
         }
-        return instance;
+
+        return instancia;
     }
 
-    // Método de ejemplo para demostrar la funcionalidad
-    public void manageService() {
-        System.out.println("Gestionando servicios de streaming...");
+    public void setServicio(StreamingService servicio) {
+        this.servicioActual = servicio;
+    }
+
+    public void configurarServicio() {
+        if (this.servicioActual != null) {
+            this.servicioActual.configurar();
+        } else {
+            System.out.println("No se ha seleccionado ningun servicio.");
+        }
+
+    }
+
+    public void consultarServicio(Collection<SearchResult> resultados) {
+        if (this.servicioActual != null) {
+            this.servicioActual.consultar(resultados);
+        } else {
+            System.out.println("No se ha seleccionado ningun servicio.");
+        }
+
+    }
+
+    public void buscarEnServicio(String query, Vector<String> configParams) {
+        if (this.servicioActual != null) {
+            this.servicioActual.buscar(query, configParams);
+        } else {
+            System.out.println("No se ha seleccionado ningun servicio.");
+        }
+
     }
 }
