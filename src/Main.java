@@ -1,7 +1,10 @@
 import classes.*;
-import search.StreamingServiceManager;
+import search.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Vector;
+
 
 /**
  * Clase principal que ejecuta la simulación del sistema de gestión de streaming.
@@ -60,9 +63,19 @@ public class Main {
         System.out.println(suscripcion2);
 
 
-        StreamingServiceManager manager = StreamingServiceManager.getInstance();
-        // Usar la instancia para gestionar los servicios de streaming
-        manager.manageService();
+        // Obtenemos la instancia del manager (Singleton)
+        StreamingServiceManager manager = StreamingServiceManager.getInstancia();
+
+        // Usando Netflix como servicio
+        manager.setServicio(new WatchModeService());
+        manager.configurarServicio();
+
+        // Crear una lista de resultados de búsqueda
+        Collection<SearchResult> watchModeResultados = new ArrayList<>();
+        watchModeResultados.add(new SearchResult("Stranger Things", "Serie de ciencia ficción", "https://netflix.com/strangerthings"));
+        watchModeResultados.add(new SearchResult("The Witcher", "Serie de fantasía", "https://netflix.com/thewitcher"));
+
+        manager.consultarServicio(watchModeResultados);
 
     }
 }
