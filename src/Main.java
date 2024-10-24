@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
-
 /**
  * Clase principal que ejecuta la simulación del sistema de gestión de streaming.
  */
@@ -43,12 +42,16 @@ public class Main {
         ArrayList<String> contenidoHBO = proveedorHBO.devolverContenido("serie");
 
         // Mostrar contenido devuelto
-        System.out.println("Contenido en Netflix:");
+        System.out.println("==========================================");
+        System.out.println("          Contenido en Netflix           ");
+        System.out.println("==========================================");
         for (String contenido : contenidoNetflix) {
             System.out.println("- " + contenido);
         }
 
-        System.out.println("\nContenido en HBO Max:");
+        System.out.println("\n==========================================");
+        System.out.println("          Contenido en HBO Max           ");
+        System.out.println("==========================================");
         for (String contenido : contenidoHBO) {
             System.out.println("- " + contenido);
         }
@@ -58,16 +61,17 @@ public class Main {
         Suscripcion suscripcion2 = new Suscripcion(2, usuario2.getCodigo(), proveedorHBO.getCodigo(), planBasico.getCodigo(), 6, 100.0f, true);
 
         // Mostrar información de las suscripciones
-        System.out.println("\nSuscripciones:");
+        System.out.println("\n==========================================");
+        System.out.println("               Suscripciones              ");
+        System.out.println("==========================================");
         System.out.println(suscripcion1);
         System.out.println(suscripcion2);
 
+        System.out.println("\n------------------------------------------");
+        System.out.println("                Búsquedas                ");
+        System.out.println("------------------------------------------");
 
-        System.out.println("\n\n------------------------------------------");
-        System.out.println("Busquedas: \n");
-
-
-      // Obtenemos la instancia del manager (Singleton)
+        // Obtenemos la instancia del manager (Singleton)
         StreamingServiceManager manager = StreamingServiceManager.getInstancia();
 
         // Usar el servicio WatchMode
@@ -78,20 +82,33 @@ public class Main {
         configParams.add("Región: US");
         manager.configurarServicio(configParams);
 
+        // *****  BUSCAR *****
         // Realizar una búsqueda en WatchMode
         System.out.println("\n------------------------------------------");
-        System.out.println("Busqueda con parametros (metodo buscar): \n");
+        System.out.println("   Búsqueda con parámetros (método buscar)   ");
+        System.out.println("------------------------------------------");
         Vector<String> searchParams = new Vector<>();
         searchParams.add("año: 2021");
         Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
 
-        // Mostrar los resultados
+        // Mostrar los resultados de Buscar
         for (SearchResult result : resultados) {
-            System.out.println(result.toString());
+            System.out.println(result.toString() + "\n");
         }
 
         System.out.println("\n------------------------------------------");
-        System.out.println("Busqueda con parametros (metodo consultar): \n");
+        System.out.println("   Búsqueda con parámetros (método consultar)   ");
+        System.out.println("------------------------------------------");
 
+        // *****  CONSULTAR  *****
+        // Realizar una CONSULTA en WatchMode
+        Vector<String> consultParams = new Vector<>();
+        consultParams.add("año: 2021");
+        Collection<SearchResult> consultados = manager.consultarServicio("Dune", consultParams);
+
+        // Mostrar los resultados de Consultar
+        for (SearchResult result : consultados) {
+            System.out.println(result.toString());
+        }
     }
 }

@@ -31,13 +31,13 @@ public class StreamingServiceManager {
 
     }
 
-    public void consultarServicio(String query, Vector<String> configParams) {
+    public Collection<SearchResult> consultarServicio(String query, Vector<String> configParams) {
         if (this.servicioActual != null) {
-            this.servicioActual.consultar(query,configParams);
+            return this.servicioActual.consultar(query,configParams);
         } else {
             System.out.println("No se ha seleccionado ningun servicio.");
+            return new Vector<SearchResult>();
         }
-
     }
 
     public Collection<SearchResult> buscarEnServicio(String query, Vector<String> configParams) {

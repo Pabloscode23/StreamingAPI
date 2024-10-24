@@ -31,11 +31,10 @@ public class SearchResult {
 
     @Override
     public String toString() {
-        return "SearchResult {\n" +
-                "  Título: '" + titulo + "',\n" +
-                "  Descripción: '" + descripcion + "',\n" +
-                "  Enlace: '" + enlace + "',\n" +
-                "  Plataforma: '" + plataforma + "'\n" +
-                "}";
+        return "Resultados de la Búsqueda:\n" +
+                "  Título: '" + titulo + "'\n" +
+                "  Descripción: '" + descripcion + "'\n" +
+                "  Enlace: '" + enlace + "'\n" +
+                "  Plataforma: '" + plataforma + "'";
     }
 }
