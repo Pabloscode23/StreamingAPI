@@ -25,8 +25,17 @@ public class SearchResult {
         return enlace;
     }
 
+    public String getPlataforma() {
+        return plataforma;
+    }
+
     @Override
     public String toString() {
-        return "Título: " + titulo + "\nDescripción: " + descripcion + "\nEnlace: " + enlace;
+        return "SearchResult {\n" +
+                "  Título: '" + titulo + "',\n" +
+                "  Descripción: '" + descripcion + "',\n" +
+                "  Enlace: '" + enlace + "',\n" +
+                "  Plataforma: '" + plataforma + "'\n" +
+                "}";
     }
 }
