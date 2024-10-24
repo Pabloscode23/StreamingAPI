@@ -63,6 +63,10 @@ public class Main {
         System.out.println(suscripcion2);
 
 
+        System.out.println("\n\n------------------------------------------");
+        System.out.println("Busquedas: \n");
+
+
       // Obtenemos la instancia del manager (Singleton)
         StreamingServiceManager manager = StreamingServiceManager.getInstancia();
 
@@ -75,6 +79,8 @@ public class Main {
         manager.configurarServicio(configParams);
 
         // Realizar una búsqueda en WatchMode
+        System.out.println("\n------------------------------------------");
+        System.out.println("Busqueda con parametros (metodo buscar): \n");
         Vector<String> searchParams = new Vector<>();
         searchParams.add("año: 2021");
         Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
@@ -83,5 +89,9 @@ public class Main {
         for (SearchResult result : resultados) {
             System.out.println(result.toString());
         }
+
+        System.out.println("\n------------------------------------------");
+        System.out.println("Busqueda con parametros (metodo consultar): \n");
+
     }
 }
