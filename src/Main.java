@@ -1,4 +1,5 @@
 import classes.*;
+import search.StreamingServiceManager;
 
 import java.util.ArrayList;
 
@@ -57,5 +58,11 @@ public class Main {
         System.out.println("\nSuscripciones:");
         System.out.println(suscripcion1);
         System.out.println(suscripcion2);
+
+
+        StreamingServiceManager manager = StreamingServiceManager.getInstance();
+        // Usar la instancia para gestionar los servicios de streaming
+        manager.manageService();
+
     }
 }
