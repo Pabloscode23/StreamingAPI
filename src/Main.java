@@ -13,6 +13,7 @@ public class Main {
      * Método principal que inicializa el sistema y muestra su funcionamiento.
      */
     public static void main(String[] args) {
+        /*
         // Creación de usuarios
         Usuario usuario1 = new Usuario(1, "Carlos Mendoza", "carlos.mendoza@example.com", "contrasena123");
         Usuario usuario2 = new Usuario(2, "Sofia López", "sofia.lopez@example.com", "contrasena456");
@@ -66,6 +67,7 @@ public class Main {
         System.out.println("==========================================");
         System.out.println(suscripcion1);
         System.out.println(suscripcion2);
+        */
 
         System.out.println("\n------------------------------------------");
         System.out.println("                Búsquedas                ");
