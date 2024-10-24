@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class WatchModeService implements StreamingService {
+    /*API_KEY debe de cambiar, utilizar el propio generado en WatchMode*/
     private static final String API_KEY = "XYC7tTUpWat5eJzmlbMgJyKaMKbenW42g0Hamtoh";
     private static final String BASE_URL = "https://api.watchmode.com/v1/";
 

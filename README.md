@@ -5,9 +5,11 @@ Este proyecto forma parte del curso de Programacion con Patrones.
 ---
 ## Dependencias o necesidades
 
-Se requiere la implementacion de org.json.
+Registrarse en WatchMode para obtener el APIKey:
+https://api.watchmode.com/
 
-En el siguiente link se puede encontrar el .jar necesario
+
+Se requiere la implementacion de org.json. En el siguiente link se puede encontrar el .jar necesario:
 https://mavenlibs.com/jar/file/org.json/json
 
 ## Grupo 1
