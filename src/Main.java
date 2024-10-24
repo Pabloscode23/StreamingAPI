@@ -75,6 +75,13 @@ public class Main {
         manager.configurarServicio(configParams);
 
         // Realizar una búsqueda en WatchMode
-        Vector<String> searchPar;
+        Vector<String> searchParams = new Vector<>();
+        searchParams.add("año: 2021");
+        Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
+
+        // Mostrar los resultados
+        for (SearchResult result : resultados) {
+            System.out.println(result.toString());
+        }
     }
 }
