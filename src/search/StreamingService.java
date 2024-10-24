@@ -1,5 +1,8 @@
 package search;
 
+import java.util.Collection;
+import java.util.Vector;
+
 public interface StreamingService {
 
     /**

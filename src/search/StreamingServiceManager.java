@@ -1,5 +1,8 @@
 package search;
 
+import java.util.Collection;
+import java.util.Vector;
+
 public class StreamingServiceManager {
     private static StreamingServiceManager instancia;
     private StreamingService servicioActual;
@@ -19,18 +22,18 @@ public class StreamingServiceManager {
         this.servicioActual = servicio;
     }
 
-    public void configurarServicio() {
+    public void configurarServicio(Collection<String> configParams) {
         if (this.servicioActual != null) {
-            this.servicioActual.configurar();
+            this.servicioActual.configurar (configParams);
         } else {
             System.out.println("No se ha seleccionado ningun servicio.");
         }
 
     }
 
-    public void consultarServicio(Collection<SearchResult> resultados) {
+    public void consultarServicio(String query, Vector<String> configParams) {
         if (this.servicioActual != null) {
-            this.servicioActual.consultar(resultados);
+            this.servicioActual.consultar(query,configParams);
         } else {
             System.out.println("No se ha seleccionado ningun servicio.");
         }
