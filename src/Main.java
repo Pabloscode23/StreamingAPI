@@ -63,19 +63,18 @@ public class Main {
         System.out.println(suscripcion2);
 
 
-        // Obtenemos la instancia del manager (Singleton)
+      // Obtenemos la instancia del manager (Singleton)
         StreamingServiceManager manager = StreamingServiceManager.getInstancia();
 
-        // Usando Netflix como servicio
+        // Usar el servicio WatchMode
         manager.setServicio(new WatchModeService());
-        manager.configurarServicio();
 
-        // Crear una lista de resultados de búsqueda
-        Collection<SearchResult> watchModeResultados = new ArrayList<>();
-        watchModeResultados.add(new SearchResult("Stranger Things", "Serie de ciencia ficción", "https://netflix.com/strangerthings"));
-        watchModeResultados.add(new SearchResult("The Witcher", "Serie de fantasía", "https://netflix.com/thewitcher"));
+        // Configurar el servicio WatchMode
+        Vector<String> configParams = new Vector<>();
+        configParams.add("Región: US");
+        manager.configurarServicio(configParams);
 
-        manager.consultarServicio(watchModeResultados);
-
+        // Realizar una búsqueda en WatchMode
+        Vector<String> searchPar;
     }
 }
