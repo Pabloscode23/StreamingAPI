@@ -40,12 +40,12 @@ public class StreamingServiceManager {
 
     }
 
-    public void buscarEnServicio(String query, Vector<String> configParams) {
+    public Collection<SearchResult> buscarEnServicio(String query, Vector<String> configParams) {
         if (this.servicioActual != null) {
-            this.servicioActual.buscar(query, configParams);
+            return this.servicioActual.buscar(query, configParams);
         } else {
             System.out.println("No se ha seleccionado ningun servicio.");
+            return new Vector<SearchResult>();
         }
-
     }
 }
