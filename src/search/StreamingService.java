@@ -1,7 +1,4 @@
-package org.search;
-
-import java.util.Collection;
-import java.util.Vector;
+package Search
 
 public interface StreamingService {
 
