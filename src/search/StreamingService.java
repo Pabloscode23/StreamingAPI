@@ -2,9 +2,8 @@ package search;
 
 import java.util.Collection;
 import java.util.Vector;
-
+//patron Strategy
 public interface StreamingService {
-
     /**
      * Configuración para servicio específico de streaming
      * @param configParams Collection<String> Parámetros de configuración del servicio

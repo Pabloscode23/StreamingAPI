@@ -6,6 +6,9 @@ public class SearchResult {
     private String enlace;
     private String plataforma;
 
+    public SearchResult() {
+    }
+
     public SearchResult(String titulo, String descripcion, String enlace, String plataforma) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -38,3 +41,4 @@ public class SearchResult {
                 "  Plataforma: '" + plataforma + "'";
     }
 }
+

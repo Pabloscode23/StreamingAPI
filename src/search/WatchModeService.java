@@ -7,14 +7,13 @@ import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class WatchModeService implements StreamingService {
-    /*API_KEY debe de cambiar, utilizar el propio generado en WatchMode*/
     private static final String API_KEY = "XYC7tTUpWat5eJzmlbMgJyKaMKbenW42g0Hamtoh";
     private static final String BASE_URL = "https://api.watchmode.com/v1/";
+
 
     @Override
     public void configurar(Collection<String> configParams) {
@@ -34,6 +33,9 @@ public class WatchModeService implements StreamingService {
             URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
+
+            // Agregar la API Key en los encabezados
+            conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
 
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
@@ -55,9 +57,12 @@ public class WatchModeService implements StreamingService {
                     Integer id = title.getInt("id");
 
                     String detailsUrl = BASE_URL + "title/" + id + "/details/?apiKey=" + API_KEY + "&append_to_response=sources";
-                    URL detailurl = new URL(detailsUrl);
-                    HttpURLConnection connDetail = (HttpURLConnection) detailurl.openConnection();
+                    URL detailUrl = new URL(detailsUrl);
+                    HttpURLConnection connDetail = (HttpURLConnection) detailUrl.openConnection();
                     connDetail.setRequestMethod("GET");
+
+                    // Repetir el mismo proceso con el detalle
+                    connDetail.setRequestProperty("Authorization", "Bearer " + API_KEY);
 
                     int detailResponseCode = connDetail.getResponseCode();
                     if (detailResponseCode == 200) {
@@ -114,11 +119,14 @@ public class WatchModeService implements StreamingService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
+            // Agregar la API Key en los encabezados
+            conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
+
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String inputLine;
-                StringBuffer response = new StringBuffer();
+                StringBuilder response = new StringBuilder();
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
@@ -133,14 +141,17 @@ public class WatchModeService implements StreamingService {
                     Integer id = title.getInt("id");
 
                     String detailsUrl = BASE_URL + "title/" + id + "/details/?apiKey=" + API_KEY + "&append_to_response=sources";
-                    URL detailurl = new URL(detailsUrl);
-                    HttpURLConnection connDetail = (HttpURLConnection) detailurl.openConnection();
+                    URL detailUrl = new URL(detailsUrl);
+                    HttpURLConnection connDetail = (HttpURLConnection) detailUrl.openConnection();
                     connDetail.setRequestMethod("GET");
+
+                    // Repetir el mismo proceso con el detalle
+                    connDetail.setRequestProperty("Authorization", "Bearer " + API_KEY);
 
                     int detailResponseCode = connDetail.getResponseCode();
                     if (detailResponseCode == 200) {
                         BufferedReader detailsIn = new BufferedReader(new InputStreamReader(connDetail.getInputStream()));
-                        StringBuffer detailResponse = new StringBuffer();
+                        StringBuilder detailResponse = new StringBuilder();
                         String detailsInputLine;
 
                         while ((detailsInputLine = detailsIn.readLine()) != null) {
