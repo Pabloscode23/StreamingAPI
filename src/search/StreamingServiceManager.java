@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Vector;
 
 public class StreamingServiceManager {
-    // Patrón Singleton
     private static StreamingServiceManager instancia;
     private StreamingService servicioActual;
-    private List<Observer> observadores; // Lista de observadores
+    private List<Observer> observadores;
 
     private StreamingServiceManager() {
         this.observadores = new Vector<>();
@@ -21,30 +20,46 @@ public class StreamingServiceManager {
         return instancia;
     }
 
-    // Método para agregar un observador
+    // Agregar un observador
     public void agregarObservador(Observer observador) {
         this.observadores.add(observador);
     }
 
-    // Método para eliminar un observador
+    // Eliminar un observador
     public void eliminarObservador(Observer observador) {
         this.observadores.remove(observador);
     }
 
     // Notificar a los observadores
-    private void notificarObservadores(String mensaje) {
+    public void notificarObservadores(String mensaje) {
         for (Observer observador : observadores) {
             observador.actualizar(mensaje);
         }
     }
 
-    // Método para establecer el servicio usando la fábrica
+    // Establecer el servicio usando la fábrica
     public void setServicio(String tipoServicio) {
-        this.servicioActual = StreamingServiceFactory.crearServicio(tipoServicio);
-        notificarObservadores("Servicio seleccionado: " + tipoServicio);  // Notificar a los observadores
+        StreamingServiceFactory factory;
+
+        switch (tipoServicio) {
+            case "WatchMode":
+                factory = new WatchModeServiceFactory();
+                break;
+            default:
+                System.out.println("Servicio no reconocido.");
+                return;
+        }
+
+        // Crear el servicio usando la fábrica
+        this.servicioActual = factory.crearServicio();
+        if (this.servicioActual != null) {
+            notificarObservadores("Servicio seleccionado: " + tipoServicio);  // Notificar a los observadores
+        } else {
+            System.out.println("No se pudo crear el servicio: " + tipoServicio);
+        }
     }
 
-    // Método para configurar el servicio
+    // Configurar el servicio
     public void configurarServicio(Collection<String> configParams) {
         if (this.servicioActual != null) {
             this.servicioActual.configurar(configParams);
