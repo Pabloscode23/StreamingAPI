@@ -1,17 +1,28 @@
-import search.Observer;
-import search.SearchResult;
-import search.StreamingServiceManager;
-import search.StreamingService;
-import search.WatchModeServiceFactory;
+import observer.Observer;
+import model.SearchResult;
+import service.StreamingServiceManager;
 
-import java.util.Collection;
-import search.Observer;
-import search.SearchResult;
-import search.StreamingServiceManager;
 import java.util.Collection;
 import java.util.Vector;
 
+/**
+ * Clase principal que simula la interacción con un servicio de streaming utilizando los patrones de diseño Singleton y Observer.
+ * <p>
+ * El patrón Singleton asegura que haya una única instancia de StreamingServiceManager en la aplicación.
+ * El patrón Observer permite que la clase Main reciba notificaciones de cambios en el estado del servicio de streaming.
+ * </p>
+ */
 public class Main implements Observer {
+
+    /**
+     * Método principal que ejecuta el programa.
+     * <p>
+     * Este método obtiene la instancia del {@link StreamingServiceManager}, registra la clase Main como observador
+     * y luego configura el servicio y realiza operaciones de búsqueda y consulta.
+     * </p>
+     *
+     * @param args Argumentos de la línea de comandos (no utilizados en este caso).
+     */
     public static void main(String[] args) {
         System.out.println("\n------------------------------------------");
         System.out.println("                Búsquedas                ");
@@ -27,13 +38,22 @@ public class Main implements Observer {
         configurarYRealizarOperaciones(manager);
     }
 
+    /**
+     * Configura el servicio de streaming y realiza las operaciones de búsqueda y consulta.
+     * <p>
+     * En este método se selecciona un servicio de streaming, se configuran los parámetros y luego se llaman
+     * los métodos para realizar las búsquedas y consultas.
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
     private static void configurarYRealizarOperaciones(StreamingServiceManager manager) {
         // Seleccionar servicio y configurarlo
         manager.setServicio("WatchMode");
 
         // Configurar parámetros del servicio
         Vector<String> configParams = new Vector<>();
-        configParams.add("Región: US");
+        configParams.add("Región: US"); // Se puede ajustar según sea necesario
         manager.configurarServicio(configParams);
 
         // Realizar búsqueda general
@@ -43,7 +63,14 @@ public class Main implements Observer {
         realizarConsultaGeneral(manager);
     }
 
-    // Implementación del método para realizar la búsqueda general
+    /**
+     * Realiza una búsqueda en el servicio configurado utilizando parámetros específicos.
+     * <p>
+     * Este método utiliza el parámetro "año: 2021" para buscar la película "Inception".
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
     private static void realizarBusquedaGeneral(StreamingServiceManager manager) {
         System.out.println("\n------------------------------------------");
         System.out.println("   Búsqueda con parámetros   ");
@@ -51,7 +78,7 @@ public class Main implements Observer {
 
         // Parámetros para la búsqueda general
         Vector<String> searchParams = new Vector<>();
-        searchParams.add("año: 2021");
+        searchParams.add("año: 2021"); // Este parámetro se puede usar según lo que espere el servicio
 
         // Llamar al método de búsqueda
         Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
@@ -60,7 +87,14 @@ public class Main implements Observer {
         mostrarResultados(resultados);
     }
 
-    // Implementación del método para realizar la consulta general
+    /**
+     * Realiza una consulta en el servicio configurado utilizando parámetros específicos.
+     * <p>
+     * Este método utiliza el parámetro "año: 2021" para consultar la película "Dune".
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
     private static void realizarConsultaGeneral(StreamingServiceManager manager) {
         System.out.println("\n------------------------------------------");
         System.out.println("   Consulta con parámetros   ");
@@ -68,7 +102,7 @@ public class Main implements Observer {
 
         // Parámetros para la consulta
         Vector<String> consultParams = new Vector<>();
-        consultParams.add("año: 2021");
+        consultParams.add("año: 2021"); // Este parámetro también se puede ajustar según la consulta
 
         // Llamar al método de consulta
         Collection<SearchResult> consultados = manager.consultarServicio("Dune", consultParams);
@@ -77,7 +111,14 @@ public class Main implements Observer {
         mostrarResultados(consultados);
     }
 
-    // Método común para mostrar resultados
+    /**
+     * Muestra los resultados de la búsqueda o consulta en la consola.
+     * <p>
+     * Si no hay resultados, se muestra un mensaje indicando que no se encontraron coincidencias.
+     * </p>
+     *
+     * @param resultados La colección de resultados de búsqueda o consulta.
+     */
     private static void mostrarResultados(Collection<SearchResult> resultados) {
         if (resultados != null && !resultados.isEmpty()) {
             for (SearchResult result : resultados) {
@@ -88,7 +129,15 @@ public class Main implements Observer {
         }
     }
 
-    // Implementación del método actualizar del Observer
+    /**
+     * Método que se ejecuta cuando el {@link StreamingServiceManager} notifica un cambio de estado.
+     * <p>
+     * Este método se invoca como parte del patrón Observer para mantener a la clase Main informada
+     * sobre el estado del servicio de streaming.
+     * </p>
+     *
+     * @param mensaje El mensaje que se notifica desde el {@link StreamingServiceManager}.
+     */
     @Override
     public void actualizar(String mensaje) {
         System.out.println("Notificación del Manager: " + mensaje);
