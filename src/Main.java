@@ -1,116 +1,145 @@
-import classes.*;
-import search.*;
+import observer.Observer;
+import model.SearchResult;
+import service.StreamingServiceManager;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
 /**
- * Clase principal que ejecuta la simulación del sistema de gestión de streaming.
+ * Clase principal que simula la interacción con un servicio de streaming utilizando los patrones de diseño Singleton y Observer.
+ * <p>
+ * El patrón Singleton asegura que haya una única instancia de StreamingServiceManager en la aplicación.
+ * El patrón Observer permite que la clase Main reciba notificaciones de cambios en el estado del servicio de streaming.
+ * </p>
  */
-public class Main {
+public class Main implements Observer {
+
     /**
-     * Método principal que inicializa el sistema y muestra su funcionamiento.
+     * Método principal que ejecuta el programa.
+     * <p>
+     * Este método obtiene la instancia del {@link StreamingServiceManager}, registra la clase Main como observador
+     * y luego configura el servicio y realiza operaciones de búsqueda y consulta.
+     * </p>
+     *
+     * @param args Argumentos de la línea de comandos (no utilizados en este caso).
      */
     public static void main(String[] args) {
-        /*
-        // Creación de usuarios
-        Usuario usuario1 = new Usuario(1, "Carlos Mendoza", "carlos.mendoza@example.com", "contrasena123");
-        Usuario usuario2 = new Usuario(2, "Sofia López", "sofia.lopez@example.com", "contrasena456");
-
-        // Creación de proveedores
-        Proveedor proveedorNetflix = new Proveedor(1, "Netflix", "https://www.netflix.com");
-        Proveedor proveedorHBO = new Proveedor(2, "HBO Max", "https://www.hbomax.com");
-
-        // Creación de planes
-        Plan planBasico = new Plan(1, "Plan Básico");
-        Plan planPremium = new Plan(2, "Plan Premium");
-
-        // Creación de películas
-        Pelicula pelicula1 = new Pelicula(1, "El Hoyo");
-        Pelicula pelicula2 = new Pelicula(2, "Cazadores de Sombras");
-
-        // Creación de series
-        Serie serie1 = new Serie(1, "La Casa de Papel");
-        Serie serie2 = new Serie(2, "Luis Miguel: La Serie");
-
-        // Autenticación de usuario
-        proveedorNetflix.autenticarUsuario(usuario1.getCorreo(), usuario1.getContrasena());
-        proveedorHBO.autenticarUsuario(usuario2.getCorreo(), usuario2.getContrasena());
-
-        // Devolver contenido del proveedor
-        ArrayList<String> contenidoNetflix = proveedorNetflix.devolverContenido("peli");
-        ArrayList<String> contenidoHBO = proveedorHBO.devolverContenido("serie");
-
-        // Mostrar contenido devuelto
-        System.out.println("==========================================");
-        System.out.println("          Contenido en Netflix           ");
-        System.out.println("==========================================");
-        for (String contenido : contenidoNetflix) {
-            System.out.println("- " + contenido);
-        }
-
-        System.out.println("\n==========================================");
-        System.out.println("          Contenido en HBO Max           ");
-        System.out.println("==========================================");
-        for (String contenido : contenidoHBO) {
-            System.out.println("- " + contenido);
-        }
-
-        // Creación de suscripciones
-        Suscripcion suscripcion1 = new Suscripcion(1, usuario1.getCodigo(), proveedorNetflix.getCodigo(), planPremium.getCodigo(), 12, 200.0f, true);
-        Suscripcion suscripcion2 = new Suscripcion(2, usuario2.getCodigo(), proveedorHBO.getCodigo(), planBasico.getCodigo(), 6, 100.0f, true);
-
-        // Mostrar información de las suscripciones
-        System.out.println("\n==========================================");
-        System.out.println("               Suscripciones              ");
-        System.out.println("==========================================");
-        System.out.println(suscripcion1);
-        System.out.println(suscripcion2);
-        */
-
         System.out.println("\n------------------------------------------");
         System.out.println("                Búsquedas                ");
         System.out.println("------------------------------------------");
 
-        // Obtenemos la instancia del manager (Singleton)
+        // Obtener la instancia de StreamingServiceManager (Singleton)
         StreamingServiceManager manager = StreamingServiceManager.getInstancia();
 
-        // Usar el servicio WatchMode
-        manager.setServicio(new WatchModeService());
+        // Registrar el observador (Main) en el manager
+        manager.agregarObservador(new Main());
 
-        // Configurar el servicio WatchMode
+        // Configurar el servicio seleccionado y realizar operaciones
+        configurarYRealizarOperaciones(manager);
+    }
+
+    /**
+     * Configura el servicio de streaming y realiza las operaciones de búsqueda y consulta.
+     * <p>
+     * En este método se selecciona un servicio de streaming, se configuran los parámetros y luego se llaman
+     * los métodos para realizar las búsquedas y consultas.
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
+    private static void configurarYRealizarOperaciones(StreamingServiceManager manager) {
+        // Seleccionar servicio y configurarlo
+        manager.setServicio("WatchMode");
+
+        // Configurar parámetros del servicio
         Vector<String> configParams = new Vector<>();
-        configParams.add("Región: US");
+        configParams.add("Región: US"); // Se puede ajustar según sea necesario
         manager.configurarServicio(configParams);
 
-        // *****  BUSCAR *****
-        // Realizar una búsqueda en WatchMode
+        // Realizar búsqueda general
+        realizarBusquedaGeneral(manager);
+
+        // Realizar consulta general
+        realizarConsultaGeneral(manager);
+    }
+
+    /**
+     * Realiza una búsqueda en el servicio configurado utilizando parámetros específicos.
+     * <p>
+     * Este método utiliza el parámetro "año: 2021" para buscar la película "Inception".
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
+    private static void realizarBusquedaGeneral(StreamingServiceManager manager) {
         System.out.println("\n------------------------------------------");
-        System.out.println("   Búsqueda con parámetros (método buscar)   ");
+        System.out.println("   Búsqueda con parámetros   ");
         System.out.println("------------------------------------------");
+
+        // Parámetros para la búsqueda general
         Vector<String> searchParams = new Vector<>();
-        searchParams.add("año: 2021");
+        searchParams.add("año: 2021"); // Este parámetro se puede usar según lo que espere el servicio
+
+        // Llamar al método de búsqueda
         Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
 
-        // Mostrar los resultados de Buscar
-        for (SearchResult result : resultados) {
-            System.out.println(result.toString() + "\n");
-        }
+        // Mostrar los resultados de la búsqueda
+        mostrarResultados(resultados);
+    }
 
+    /**
+     * Realiza una consulta en el servicio configurado utilizando parámetros específicos.
+     * <p>
+     * Este método utiliza el parámetro "año: 2021" para consultar la película "Dune".
+     * </p>
+     *
+     * @param manager El administrador de servicios de streaming.
+     */
+    private static void realizarConsultaGeneral(StreamingServiceManager manager) {
         System.out.println("\n------------------------------------------");
-        System.out.println("   Búsqueda con parámetros (método consultar)   ");
+        System.out.println("   Consulta con parámetros   ");
         System.out.println("------------------------------------------");
 
-        // *****  CONSULTAR  *****
-        // Realizar una CONSULTA en WatchMode
+        // Parámetros para la consulta
         Vector<String> consultParams = new Vector<>();
-        consultParams.add("año: 2021");
+        consultParams.add("año: 2021"); // Este parámetro también se puede ajustar según la consulta
+
+        // Llamar al método de consulta
         Collection<SearchResult> consultados = manager.consultarServicio("Dune", consultParams);
 
-        // Mostrar los resultados de Consultar
-        for (SearchResult result : consultados) {
-            System.out.println(result.toString());
+        // Mostrar los resultados de la consulta
+        mostrarResultados(consultados);
+    }
+
+    /**
+     * Muestra los resultados de la búsqueda o consulta en la consola.
+     * <p>
+     * Si no hay resultados, se muestra un mensaje indicando que no se encontraron coincidencias.
+     * </p>
+     *
+     * @param resultados La colección de resultados de búsqueda o consulta.
+     */
+    private static void mostrarResultados(Collection<SearchResult> resultados) {
+        if (resultados != null && !resultados.isEmpty()) {
+            for (SearchResult result : resultados) {
+                System.out.println(result.toString() + "\n");
+            }
+        } else {
+            System.out.println("No se encontraron resultados.");
         }
+    }
+
+    /**
+     * Método que se ejecuta cuando el {@link StreamingServiceManager} notifica un cambio de estado.
+     * <p>
+     * Este método se invoca como parte del patrón Observer para mantener a la clase Main informada
+     * sobre el estado del servicio de streaming.
+     * </p>
+     *
+     * @param mensaje El mensaje que se notifica desde el {@link StreamingServiceManager}.
+     */
+    @Override
+    public void actualizar(String mensaje) {
+        System.out.println("Notificación del Manager: " + mensaje);
     }
 }
