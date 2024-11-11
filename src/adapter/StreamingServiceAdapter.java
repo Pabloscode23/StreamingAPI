@@ -34,20 +34,13 @@ public interface StreamingServiceAdapter {
     Collection<SearchResult> buscar(String query, Vector<String> searchParams);
 
     /**
-     * Realiza una consulta en el servicio de streaming utilizando los parámetros de consulta proporcionados.
+     * Realiza una búsqueda avanzada en el servicio de streaming utilizando filtros específicos como tipo de contenido, región y plataforma.
      *
-     * @param query La consulta que se desea realizar.
-     * @param consultParams Los parámetros adicionales para la consulta.
-     * @return Una colección de objetos SearchResult que representan los resultados de la consulta.
+     * @param query El título o palabra clave que se desea buscar.
+     * @param tipoContenido El tipo de contenido (por ejemplo, "movie" o "tv_movie").
+     * @param region La región de búsqueda (por ejemplo, "US" o "GB").
+     * @param sourceId El ID de la plataforma específica (por ejemplo, 203 para Netflix).
+     * @return Una colección de objetos SearchResult que representan los resultados de la búsqueda avanzada.
      */
-    Collection<SearchResult> consultar(String query, Vector<String> consultParams);
+    Collection<SearchResult> buscarConFiltrosAvanzados(String query, String tipoContenido, String region, int sourceId);
 }
-
-
-
-
-
-
-
-
-

@@ -1,115 +1,132 @@
 package classes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Clase que representa a un Usuario en el sistema.
- * Esta clase contiene la información básica del usuario,
- * incluyendo su código, nombre, correo y contraseña.
+ * Representa un usuario con sus datos personales y suscripciones.
  */
 public class Usuario {
+    /**
+     * Código único que identifica al usuario.
+     */
     private int codigo;
+
+    /**
+     * Nombre del usuario.
+     */
     private String nombre;
+
+    /**
+     * Correo electrónico del usuario.
+     */
     private String correo;
+
+    /**
+     * Contraseña del usuario.
+     */
     private String contrasena;
 
     /**
-     * Constructor para crear un nuevo Usuario.
+     * Lista de suscripciones del usuario.
+     */
+    private List<Suscripcion> suscripciones;
+
+    /**
+     * Constructor para crear un nuevo usuario con su código, nombre, correo y contraseña.
      *
-     * @param codigo el código único del usuario.
-     * @param nombre el nombre del usuario.
-     * @param correo el correo electrónico del usuario.
-     * @param contrasena la contraseña del usuario.
+     * @param codigo     Código único del usuario.
+     * @param nombre     Nombre del usuario.
+     * @param correo     Correo electrónico del usuario.
+     * @param contrasena Contraseña del usuario.
      */
     public Usuario(int codigo, String nombre, String correo, String contrasena) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.correo = correo;
         this.contrasena = contrasena;
+        this.suscripciones = new ArrayList<>();
     }
 
     /**
      * Obtiene el código del usuario.
      *
-     * @return el código del usuario.
+     * @return Código único del usuario.
      */
     public int getCodigo() {
         return codigo;
     }
 
     /**
-     * Establece el código del usuario.
-     *
-     * @param codigo el nuevo código del usuario.
-     */
-    public void setCodigo(int codigo) {
-        this.codigo = codigo;
-    }
-
-    /**
      * Obtiene el nombre del usuario.
      *
-     * @return el nombre del usuario.
+     * @return Nombre del usuario.
      */
     public String getNombre() {
         return nombre;
     }
 
     /**
-     * Establece el nombre del usuario.
-     *
-     * @param nombre el nuevo nombre del usuario.
-     */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    /**
      * Obtiene el correo electrónico del usuario.
      *
-     * @return el correo del usuario.
+     * @return Correo electrónico del usuario.
      */
     public String getCorreo() {
         return correo;
     }
 
     /**
-     * Establece el correo electrónico del usuario.
-     *
-     * @param correo el nuevo correo del usuario.
-     */
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    /**
      * Obtiene la contraseña del usuario.
      *
-     * @return la contraseña del usuario.
+     * @return Contraseña del usuario.
      */
     public String getContrasena() {
         return contrasena;
     }
 
     /**
-     * Establece la contraseña del usuario.
+     * Obtiene la lista de suscripciones del usuario.
      *
-     * @param contrasena la nueva contraseña del usuario.
+     * @return Lista de suscripciones del usuario.
      */
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public List<Suscripcion> getSuscripciones() {
+        return suscripciones;
     }
 
     /**
-     * Devuelve una representación en forma de cadena del objeto Usuario.
+     * Establece una nueva contraseña para el usuario.
      *
-     * @return una cadena que representa al usuario.
+     * @param nuevaContrasena Nueva contraseña del usuario.
+     */
+    public void setContrasena(String nuevaContrasena) {
+        this.contrasena = nuevaContrasena;
+    }
+
+    /**
+     * Agrega una nueva suscripción a la lista de suscripciones del usuario.
+     *
+     * @param suscripcion La suscripción que se agregará al usuario.
+     */
+    public void agregarSuscripcion(Suscripcion suscripcion) {
+        suscripciones.add(suscripcion);
+    }
+
+    /**
+     * Elimina una suscripción de la lista de suscripciones del usuario.
+     *
+     * @param suscripcion La suscripción que se eliminará del usuario.
+     */
+    public void eliminarSuscripcion(Suscripcion suscripcion) {
+        suscripciones.remove(suscripcion);
+    }
+
+    /**
+     * Representación en formato de cadena del usuario, mostrando el nombre y correo.
+     *
+     * @return Cadena de texto con el nombre y correo del usuario.
      */
     @Override
     public String toString() {
-        return "Usuario{" +
-                "codigo=" + codigo +
-                ", nombre='" + nombre + '\'' +
-                ", correo='" + correo + '\'' +
-                ", contrasena='" + contrasena + '\'' +
-                '}';
+        return "Nombre: " + nombre + "\nCorreo: " + correo;
     }
 }

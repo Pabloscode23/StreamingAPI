@@ -7,13 +7,11 @@ import java.util.Collection;
 import java.util.Vector;
 
 /**
- * Esta clase adapta la interfaz de un servicio específico de streaming (WatchModeService)
- * a la interfaz común StreamingServiceAdapter.
+ * Clase adaptadora que convierte la interfaz del servicio de streaming específico (WatchModeService)
+ * a una interfaz común definida por StreamingServiceAdapter.
  *
- * El patrón de diseño utilizado en esta clase es el **Adapter**.
- *
- * El propósito del patrón Adapter es permitir que dos interfaces incompatibles puedan trabajar juntas.
- * En este caso, adaptamos la interfaz de WatchModeService a la interfaz estándar StreamingServiceAdapter.
+ * Utiliza el patrón de diseño **Adapter** para permitir que el servicio WatchModeService
+ * funcione en conjunto con el sistema que usa StreamingServiceAdapter.
  */
 public class WatchModeAdapter implements StreamingServiceAdapter {
 
@@ -34,9 +32,9 @@ public class WatchModeAdapter implements StreamingServiceAdapter {
     /**
      * Configura el servicio de streaming utilizando los parámetros de configuración proporcionados.
      *
-     * Delegamos la configuración al servicio de WatchMode.
+     * Este método delega la configuración al servicio de WatchMode.
      *
-     * @param configParams Parámetros de configuración que serán pasados al servicio.
+     * @param configParams Parámetros de configuración que serán pasados al servicio para ajustar sus opciones.
      */
     @Override
     public void configurar(Vector<String> configParams) {
@@ -46,11 +44,11 @@ public class WatchModeAdapter implements StreamingServiceAdapter {
     /**
      * Realiza una búsqueda en el servicio de streaming utilizando la consulta y parámetros de búsqueda proporcionados.
      *
-     * Delegamos la búsqueda al servicio de WatchMode.
+     * Este método delega la búsqueda general al servicio de WatchMode.
      *
-     * @param query Consulta de búsqueda.
-     * @param searchParams Parámetros de búsqueda.
-     * @return Una colección de resultados de búsqueda.
+     * @param query Consulta de búsqueda en forma de texto.
+     * @param searchParams Parámetros adicionales de búsqueda.
+     * @return Una colección de resultados de búsqueda obtenidos del servicio.
      */
     @Override
     public Collection<SearchResult> buscar(String query, Vector<String> searchParams) {
@@ -58,16 +56,19 @@ public class WatchModeAdapter implements StreamingServiceAdapter {
     }
 
     /**
-     * Consulta información adicional en el servicio de streaming utilizando la consulta y parámetros de consulta proporcionados.
+     * Realiza una búsqueda con filtros avanzados en el servicio de streaming.
      *
-     * Delegamos la consulta al servicio de WatchMode.
+     * Este método permite buscar contenido filtrado por título, tipo de contenido,
+     * región y plataforma específica (ID de la fuente de contenido).
      *
-     * @param query Consulta de información.
-     * @param consultParams Parámetros de consulta.
-     * @return Una colección de resultados de consulta.
+     * @param query Título a buscar en el catálogo del servicio.
+     * @param tipoContenido Tipo de contenido, como película o programa de TV.
+     *                      Debe especificarse como "movie" o "tv_movie" para la compatibilidad con el servicio.
+     * @param region Código de región, por ejemplo "US" para Estados Unidos o "GB" para el Reino Unido.
+     * @param sourceId Identificador de la plataforma de streaming (fuente del contenido).
+     * @return Una colección de resultados de búsqueda filtrados según los parámetros avanzados.
      */
-    @Override
-    public Collection<SearchResult> consultar(String query, Vector<String> consultParams) {
-        return servicio.consultar(query, consultParams);
+    public Collection<SearchResult> buscarConFiltrosAvanzados(String query, String tipoContenido, String region, int sourceId) {
+        return servicio.buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
     }
 }

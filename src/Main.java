@@ -1,145 +1,107 @@
-import observer.Observer;
-import model.SearchResult;
+import facade.AuthFacade;
+import classes.Usuario;
+import menu.MenuUsuario;
 import service.StreamingServiceManager;
-
-import java.util.Collection;
-import java.util.Vector;
+import java.util.Scanner;
 
 /**
- * Clase principal que simula la interacción con un servicio de streaming utilizando los patrones de diseño Singleton y Observer.
- * <p>
- * El patrón Singleton asegura que haya una única instancia de StreamingServiceManager en la aplicación.
- * El patrón Observer permite que la clase Main reciba notificaciones de cambios en el estado del servicio de streaming.
- * </p>
+ * Clase principal que inicia la aplicación, proporcionando opciones de inicio de sesión,
+ * registro de usuarios y navegación en el menú principal.
+ *
+ * Administra la interacción con el usuario a través de la consola.
  */
-public class Main implements Observer {
+public class Main {
 
     /**
-     * Método principal que ejecuta el programa.
-     * <p>
-     * Este método obtiene la instancia del {@link StreamingServiceManager}, registra la clase Main como observador
-     * y luego configura el servicio y realiza operaciones de búsqueda y consulta.
-     * </p>
+     * Método principal que ejecuta el ciclo de la aplicación, mostrando el menú principal y
+     * permitiendo al usuario iniciar sesión, registrarse o salir.
      *
-     * @param args Argumentos de la línea de comandos (no utilizados en este caso).
+     * @param args Argumentos de línea de comando (no utilizados).
      */
     public static void main(String[] args) {
-        System.out.println("\n------------------------------------------");
-        System.out.println("                Búsquedas                ");
-        System.out.println("------------------------------------------");
+        AuthFacade authFacade = new AuthFacade();
+        StreamingServiceManager serviceManager = StreamingServiceManager.getInstancia();
+        Scanner scanner = new Scanner(System.in);
+        boolean continuar = true;
 
-        // Obtener la instancia de StreamingServiceManager (Singleton)
-        StreamingServiceManager manager = StreamingServiceManager.getInstancia();
+        while (continuar) {
+            System.out.println("=== Menú Principal ===");
+            System.out.println("1. Iniciar sesión");
+            System.out.println("2. Registrarse");
+            System.out.println("3. Salir");
+            System.out.print("Seleccione una opción: ");
+            int opcion = scanner.nextInt();
+            scanner.nextLine();
 
-        // Registrar el observador (Main) en el manager
-        manager.agregarObservador(new Main());
-
-        // Configurar el servicio seleccionado y realizar operaciones
-        configurarYRealizarOperaciones(manager);
-    }
-
-    /**
-     * Configura el servicio de streaming y realiza las operaciones de búsqueda y consulta.
-     * <p>
-     * En este método se selecciona un servicio de streaming, se configuran los parámetros y luego se llaman
-     * los métodos para realizar las búsquedas y consultas.
-     * </p>
-     *
-     * @param manager El administrador de servicios de streaming.
-     */
-    private static void configurarYRealizarOperaciones(StreamingServiceManager manager) {
-        // Seleccionar servicio y configurarlo
-        manager.setServicio("WatchMode");
-
-        // Configurar parámetros del servicio
-        Vector<String> configParams = new Vector<>();
-        configParams.add("Región: US"); // Se puede ajustar según sea necesario
-        manager.configurarServicio(configParams);
-
-        // Realizar búsqueda general
-        realizarBusquedaGeneral(manager);
-
-        // Realizar consulta general
-        realizarConsultaGeneral(manager);
-    }
-
-    /**
-     * Realiza una búsqueda en el servicio configurado utilizando parámetros específicos.
-     * <p>
-     * Este método utiliza el parámetro "año: 2021" para buscar la película "Inception".
-     * </p>
-     *
-     * @param manager El administrador de servicios de streaming.
-     */
-    private static void realizarBusquedaGeneral(StreamingServiceManager manager) {
-        System.out.println("\n------------------------------------------");
-        System.out.println("   Búsqueda con parámetros   ");
-        System.out.println("------------------------------------------");
-
-        // Parámetros para la búsqueda general
-        Vector<String> searchParams = new Vector<>();
-        searchParams.add("año: 2021"); // Este parámetro se puede usar según lo que espere el servicio
-
-        // Llamar al método de búsqueda
-        Collection<SearchResult> resultados = manager.buscarEnServicio("Inception", searchParams);
-
-        // Mostrar los resultados de la búsqueda
-        mostrarResultados(resultados);
-    }
-
-    /**
-     * Realiza una consulta en el servicio configurado utilizando parámetros específicos.
-     * <p>
-     * Este método utiliza el parámetro "año: 2021" para consultar la película "Dune".
-     * </p>
-     *
-     * @param manager El administrador de servicios de streaming.
-     */
-    private static void realizarConsultaGeneral(StreamingServiceManager manager) {
-        System.out.println("\n------------------------------------------");
-        System.out.println("   Consulta con parámetros   ");
-        System.out.println("------------------------------------------");
-
-        // Parámetros para la consulta
-        Vector<String> consultParams = new Vector<>();
-        consultParams.add("año: 2021"); // Este parámetro también se puede ajustar según la consulta
-
-        // Llamar al método de consulta
-        Collection<SearchResult> consultados = manager.consultarServicio("Dune", consultParams);
-
-        // Mostrar los resultados de la consulta
-        mostrarResultados(consultados);
-    }
-
-    /**
-     * Muestra los resultados de la búsqueda o consulta en la consola.
-     * <p>
-     * Si no hay resultados, se muestra un mensaje indicando que no se encontraron coincidencias.
-     * </p>
-     *
-     * @param resultados La colección de resultados de búsqueda o consulta.
-     */
-    private static void mostrarResultados(Collection<SearchResult> resultados) {
-        if (resultados != null && !resultados.isEmpty()) {
-            for (SearchResult result : resultados) {
-                System.out.println(result.toString() + "\n");
+            switch (opcion) {
+                case 1:
+                    Usuario usuario = iniciarSesion(authFacade, scanner);
+                    if (usuario != null) {
+                        MenuUsuario menuUsuario = new MenuUsuario(authFacade, serviceManager, scanner, usuario);
+                        menuUsuario.mostrarMenu();
+                    }
+                    break;
+                case 2:
+                    registrarse(authFacade, scanner);
+                    break;
+                case 3:
+                    System.out.println("Saliendo...");
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opción inválida, intente nuevamente.");
             }
+        }
+        scanner.close();
+    }
+
+    /**
+     * Método auxiliar para iniciar sesión en el sistema.
+     * Solicita al usuario ingresar su correo y contraseña, y valida las credenciales.
+     *
+     * @param authFacade Fachada de autenticación utilizada para validar credenciales.
+     * @param scanner    Escáner para leer la entrada del usuario.
+     * @return El objeto Usuario si las credenciales son válidas, o null si son incorrectas.
+     */
+    private static Usuario iniciarSesion(AuthFacade authFacade, Scanner scanner) {
+        System.out.print("Correo: ");
+        String correo = scanner.nextLine();
+        System.out.print("Contraseña: ");
+        String contrasena = scanner.nextLine();
+
+        Usuario usuario = authFacade.iniciarSesion(correo, contrasena);
+        if (usuario != null) {
+            System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
+            return usuario;
         } else {
-            System.out.println("No se encontraron resultados.");
+            System.out.println("Correo o contraseña incorrectos.");
+            return null;
         }
     }
 
     /**
-     * Método que se ejecuta cuando el {@link StreamingServiceManager} notifica un cambio de estado.
-     * <p>
-     * Este método se invoca como parte del patrón Observer para mantener a la clase Main informada
-     * sobre el estado del servicio de streaming.
-     * </p>
+     * Método auxiliar para registrar un nuevo usuario en el sistema.
+     * Solicita al usuario ingresar su nombre, apellidos, correo y contraseña.
      *
-     * @param mensaje El mensaje que se notifica desde el {@link StreamingServiceManager}.
+     * @param authFacade Fachada de autenticación utilizada para registrar al usuario.
+     * @param scanner    Escáner para leer la entrada del usuario.
      */
-    @Override
-    public void actualizar(String mensaje) {
-        System.out.println("Notificación del Manager: " + mensaje);
+    private static void registrarse(AuthFacade authFacade, Scanner scanner) {
+        System.out.print("Nombre: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Apellidos: ");
+        String apellidos = scanner.nextLine();
+        String nombreCompleto = nombre + " " + apellidos;
+
+        System.out.print("Correo: ");
+        String correo = scanner.nextLine();
+        System.out.print("Contraseña: ");
+        String contrasena = scanner.nextLine();
+
+        if (authFacade.registrarUsuario(nombreCompleto, correo, contrasena)) {
+            System.out.println("Registro exitoso. Ahora puede iniciar sesión.");
+        } else {
+            System.out.println("El correo ya está registrado.");
+        }
     }
 }
