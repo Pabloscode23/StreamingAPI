@@ -7,16 +7,31 @@ package classes;
 public class Plan {
     int codigo;
     String nombre;
-
+    float precio;
+    int codigoProveedor;
     /**
      * Constructor
      *
      * @param codigo código del plan.
      * @param nombre nombre del plan.
+     * @param precio precio del plan
+     * @param codigoProveedor de dónde pertenece
      */
-    public Plan(int codigo, String nombre) {
+
+    public Plan(int codigo, String nombre, float precio, int codigoProveedor) {
         this.codigo = codigo;
         this.nombre = nombre;
+        this.precio = precio;
+        this.codigoProveedor = codigoProveedor;
+    }
+
+
+    public float getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(float precio) {
+        this.precio = precio;
     }
 
     /**
@@ -58,13 +73,30 @@ public class Plan {
     /**
      *
      *
-     * @return 
+     * @return
      */
+
+    public int getCodigoProveedor() {
+        return codigoProveedor;
+    }
+
+    /**
+     *
+     *
+     * @return código del proveedor al que pertenece
+     */
+
+    public void setCodigoProveedor(int codigoProveedor) {
+        this.codigoProveedor = codigoProveedor;
+    }
+
     @Override
     public String toString() {
         return "Plan{" +
                 "codigo=" + codigo +
                 ", nombre='" + nombre + '\'' +
+                ", precio=" + precio +
+                ", codigoProveedor=" + codigoProveedor +
                 '}';
     }
 }

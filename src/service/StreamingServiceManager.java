@@ -164,41 +164,5 @@ public class StreamingServiceManager {
     }
 
 
-    /*************************
-     * DE AQUI PARA ABAJO DE FIJO NO VA ACÁ
-     **************************************/
-
-
-    /**
-     * Agrega una nueva suscripción para el usuario especificado.
-     *
-     * @param usuario     El usuario al que se le agrega la suscripción.
-     * @param suscripcion La suscripción a agregar.
-     */
-    public void agregarSuscripcion(Usuario usuario, Suscripcion suscripcion) {
-        usuario.agregarSuscripcion(suscripcion);
-        notificarObservadores("Nueva suscripción agregada para " + usuario.getNombre());
-    }
-
-    /**
-     * Cancela una suscripción del usuario especificado.
-     *
-     * @param usuario     El usuario del que se cancelará la suscripción.
-     * @param suscripcion La suscripción a cancelar.
-     */
-    public void cancelarSuscripcion(Usuario usuario, Suscripcion suscripcion) {
-        usuario.eliminarSuscripcion(suscripcion);
-        notificarObservadores("Suscripción cancelada para " + usuario.getNombre());
-    }
-
-    /**
-     * Obtiene la lista de suscripciones del usuario.
-     *
-     * @param usuario El usuario del cual se obtendrán las suscripciones.
-     * @return Lista de suscripciones del usuario.
-     */
-    public List<Suscripcion> obtenerSuscripciones(Usuario usuario) {
-        return usuario.getSuscripciones();
-    }
 
 }
