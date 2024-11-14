@@ -30,11 +30,13 @@ public class Main {
             System.out.println("=== Menú Principal ===");
 
             if (contexto.haySesionActiva()) {
+                System.out.println("Estado de Sesión: Activa");
                 System.out.println("1. Continuar como: ");
                 System.out.println(contexto.getUsuarioAutenticado());
                 System.out.println("2. Cerrar Sesión");
                 System.out.println("3. Salir");
             } else {
+                System.out.println("Estado de Sesión: Inactiva");
                 System.out.println("1. Iniciar sesión");
                 System.out.println("2. Registrarse");
                 System.out.println("3. Salir");

@@ -91,6 +91,7 @@ public class MenuUsuario {
                         cuentaManager.administrarCuenta();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
+                        System.out.println("Estado de Sesión: Expirada");
                     }
                     break;
                 case 2:
@@ -98,6 +99,7 @@ public class MenuUsuario {
                         buscarEnCatalogoSencillo();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
+                        System.out.println("Estado de Sesión: Expirada");
                     }
                     break;
                 case 3:
@@ -105,6 +107,7 @@ public class MenuUsuario {
                         buscarEnCatalogoAvanzado();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
+                        System.out.println("Estado de Sesión: Expirada");
                     }
                     break;
                 case 4:
