@@ -79,6 +79,15 @@ public class Main {
         scanner.close();
     }
 
+    /**
+     * Método auxiliar para iniciar sesión en el sistema.
+     * Solicita al usuario ingresar su correo y contraseña, y valida las credenciales.
+     * Actualiza el contexto de autenticación si las credenciales son correctas.
+     *
+     * @param authFacade Fachada de autenticación utilizada para validar credenciales.
+     * @param contexto   Contexto de autenticación para gestionar el estado de la sesión.
+     * @param scanner    Escáner para leer la entrada del usuario.
+     */
     private static void iniciarSesion(AuthFacade authFacade, ContextoAutenticacion contexto, Scanner scanner) {
         System.out.print("Correo: ");
         String correo = scanner.nextLine();
@@ -96,7 +105,15 @@ public class Main {
         }
     }
 
-
+    /**
+     * Método auxiliar para continuar automáticamente la sesión del usuario autenticado
+     * sin necesidad de volver a ingresar sus credenciales.
+     *
+     * @param authFacade    Fachada de autenticación.
+     * @param serviceManager Administrador de servicios de streaming.
+     * @param contexto       Contexto de autenticación que almacena el estado de sesión del usuario.
+     * @param scanner        Escáner para leer la entrada del usuario.
+     */
     private static void iniciarSesionAutomatica(AuthFacade authFacade, StreamingServiceManager serviceManager, ContextoAutenticacion contexto, Scanner scanner) {
         Usuario usuario = contexto.getUsuarioAutenticado(); // Obtener el objeto Usuario directamente
         if (usuario != null) {
@@ -109,7 +126,13 @@ public class Main {
         }
     }
 
-
+    /**
+     * Método auxiliar para registrar un nuevo usuario en el sistema.
+     * Solicita al usuario ingresar su nombre, apellidos, correo y contraseña.
+     *
+     * @param authFacade Fachada de autenticación utilizada para registrar al usuario.
+     * @param scanner    Escáner para leer la entrada del usuario.
+     */
     private static void registrarse(AuthFacade authFacade, Scanner scanner) {
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();

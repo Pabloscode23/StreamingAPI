@@ -15,12 +15,41 @@ import java.util.Vector;
  */
 public class MenuUsuario {
 
+    /**
+     * Fachada de autenticación para manejar operaciones de usuario.
+     */
     private AuthFacade authFacade;
+
+    /**
+     * Gestor de servicios de streaming para realizar búsquedas en el catálogo.
+     */
     private StreamingServiceManager serviceManager;
+
+    /**
+     * Escáner para leer la entrada del usuario desde la consola.
+     */
     private Scanner scanner;
+
+    /**
+     * Usuario actual que está interactuando con el menú.
+     */
     private Usuario usuario;
+
+    /**
+     * Contexto de autenticación que gestiona el estado de la sesión del usuario.
+     */
     private ContextoAutenticacion contextoAutenticacion;
 
+    /**
+     * Constructor que inicializa el menú de usuario con la fachada de autenticación,
+     * el gestor de servicios de streaming, el escáner y el contexto de autenticación.
+     *
+     * @param authFacade            Fachada de autenticación para realizar operaciones de usuario.
+     * @param serviceManager        Gestor de servicios de streaming.
+     * @param scanner               Escáner para la entrada de usuario.
+     * @param usuario               Usuario actual que está interactuando con el menú.
+     * @param contextoAutenticacion Contexto de autenticación para gestionar el estado de sesión del usuario.
+     */
     public MenuUsuario(AuthFacade authFacade, StreamingServiceManager serviceManager, Scanner scanner, Usuario usuario, ContextoAutenticacion contextoAutenticacion) {
         this.authFacade = authFacade;
         this.serviceManager = serviceManager;
@@ -29,6 +58,11 @@ public class MenuUsuario {
         this.contextoAutenticacion = contextoAutenticacion;
     }
 
+    /**
+     * Muestra el menú principal del usuario, permitiéndole acceder a opciones para administrar la cuenta,
+     * realizar búsquedas en el catálogo y cerrar sesión.
+     * Verifica si la sesión ha expirado antes de ejecutar cualquier acción.
+     */
     public void mostrarMenu() {
         boolean sesionActiva = true;
         while (sesionActiva) {
@@ -84,7 +118,9 @@ public class MenuUsuario {
         }
     }
 
-
+    /**
+     * Realiza una búsqueda sencilla en el catálogo de streaming, solicitando solo el término de búsqueda.
+     */
     private void buscarEnCatalogoSencillo() {
         serviceManager.setServicio("WatchMode");
 
@@ -99,6 +135,10 @@ public class MenuUsuario {
         mostrarResultados(resultados);
     }
 
+    /**
+     * Realiza una búsqueda avanzada en el catálogo de streaming, permitiendo especificar el tipo de contenido,
+     * la región y la plataforma de streaming.
+     */
     private void buscarEnCatalogoAvanzado() {
         serviceManager.setServicio("WatchMode");
 
@@ -149,6 +189,11 @@ public class MenuUsuario {
         mostrarResultados(resultados);
     }
 
+    /**
+     * Muestra los resultados de búsqueda obtenidos.
+     *
+     * @param resultados Colección de resultados de búsqueda.
+     */
     private void mostrarResultados(Collection<SearchResult> resultados) {
         if (resultados.isEmpty()) {
             System.out.println("No se encontraron resultados para la búsqueda.");

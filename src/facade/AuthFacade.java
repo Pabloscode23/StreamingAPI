@@ -6,16 +6,39 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fachada de autenticación que implementa la interfaz AuthService para gestionar las operaciones de
+ * registro, inicio de sesión y cambio de contraseña de los usuarios.
+ * Los usuarios se almacenan y gestionan a través de un archivo de texto.
+ */
 public class AuthFacade implements AuthService {
 
+    /**
+     * Lista de usuarios registrados en el sistema.
+     */
     private List<Usuario> usuarios;
+
+    /**
+     * Ruta del archivo donde se almacenan los datos de los usuarios.
+     */
     private static final String FILE_PATH = "usuarios.txt";
 
+    /**
+     * Constructor de la clase AuthFacade. Inicializa la lista de usuarios y carga
+     * los datos desde el archivo al iniciar.
+     */
     public AuthFacade() {
         usuarios = new ArrayList<>();
         cargarUsuarios();
     }
 
+    /**
+     * Inicia sesión de un usuario validando su correo y contraseña.
+     *
+     * @param correo     Correo electrónico del usuario.
+     * @param contrasena Contraseña del usuario.
+     * @return El objeto Usuario si las credenciales son válidas, de lo contrario, null.
+     */
     @Override
     public Usuario iniciarSesion(String correo, String contrasena) {
         Usuario usuario = obtenerUsuarioPorCorreo(correo);
@@ -25,6 +48,14 @@ public class AuthFacade implements AuthService {
         return null;
     }
 
+    /**
+     * Registra un nuevo usuario si el correo no está registrado previamente.
+     *
+     * @param nombre     Nombre del usuario.
+     * @param correo     Correo electrónico del usuario.
+     * @param contrasena Contraseña del usuario.
+     * @return true si el usuario fue registrado correctamente, false si el correo ya existe.
+     */
     @Override
     public boolean registrarUsuario(String nombre, String correo, String contrasena) {
         if (obtenerUsuarioPorCorreo(correo) != null) {
@@ -37,6 +68,13 @@ public class AuthFacade implements AuthService {
         return true;
     }
 
+    /**
+     * Cambia la contraseña de un usuario existente.
+     *
+     * @param usuario          El usuario que cambiará su contraseña.
+     * @param nuevaContrasena La nueva contraseña del usuario.
+     * @return true si el cambio fue exitoso.
+     */
     @Override
     public boolean cambiarContrasena(Usuario usuario, String nuevaContrasena) {
         usuario.setContrasena(nuevaContrasena);
@@ -44,6 +82,10 @@ public class AuthFacade implements AuthService {
         return true;
     }
 
+    /**
+     * Guarda los datos de los usuarios en un archivo de texto.
+     * Cada usuario se guarda en una línea con formato CSV.
+     */
     @Override
     public void guardarUsuarios() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
@@ -57,6 +99,10 @@ public class AuthFacade implements AuthService {
         }
     }
 
+    /**
+     * Carga los datos de los usuarios desde un archivo de texto.
+     * Si el archivo no existe, se crea una lista vacía de usuarios.
+     */
     private void cargarUsuarios() {
         usuarios.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
@@ -80,6 +126,12 @@ public class AuthFacade implements AuthService {
         }
     }
 
+    /**
+     * Busca un usuario en la lista por su correo electrónico.
+     *
+     * @param correo Correo electrónico del usuario a buscar.
+     * @return El objeto Usuario si se encuentra, de lo contrario, null.
+     */
     public Usuario obtenerUsuarioPorCorreo(String correo) {
         for (Usuario usuario : usuarios) {
             if (usuario.getCorreo().equals(correo)) {
@@ -89,6 +141,11 @@ public class AuthFacade implements AuthService {
         return null;
     }
 
+    /**
+     * Obtiene la instancia del gestor de servicios de streaming.
+     *
+     * @return La instancia de StreamingServiceManager.
+     */
     public StreamingServiceManager getStreamingServiceManager() {
         return StreamingServiceManager.getInstancia();
     }
