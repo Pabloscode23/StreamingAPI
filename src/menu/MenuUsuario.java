@@ -4,7 +4,7 @@ import facade.AuthFacade;
 import classes.Usuario;
 import service.StreamingServiceManager;
 import model.SearchResult;
-
+import state.*;
 import java.util.Collection;
 import java.util.Scanner;
 import java.util.Vector;
@@ -15,49 +15,32 @@ import java.util.Vector;
  */
 public class MenuUsuario {
 
-    /**
-     * Fachada de autenticación para manejar operaciones de usuario.
-     */
     private AuthFacade authFacade;
-
-    /**
-     * Gestor de servicios de streaming para realizar búsquedas en el catálogo.
-     */
     private StreamingServiceManager serviceManager;
-
-    /**
-     * Escáner para leer la entrada del usuario desde la consola.
-     */
     private Scanner scanner;
-
-    /**
-     * Usuario actual que está interactuando con el menú.
-     */
     private Usuario usuario;
+    private ContextoAutenticacion contextoAutenticacion;
 
-    /**
-     * Constructor que inicializa el menú de usuario con la fachada de autenticación,
-     * el gestor de servicios de streaming, el escáner y el usuario actual.
-     *
-     * @param authFacade    Fachada de autenticación para realizar operaciones de usuario.
-     * @param serviceManager Gestor de servicios de streaming.
-     * @param scanner       Escáner para la entrada de usuario.
-     * @param usuario       Usuario actual que está interactuando con el menú.
-     */
-    public MenuUsuario(AuthFacade authFacade, StreamingServiceManager serviceManager, Scanner scanner, Usuario usuario) {
+    public MenuUsuario(AuthFacade authFacade, StreamingServiceManager serviceManager, Scanner scanner, Usuario usuario, ContextoAutenticacion contextoAutenticacion) {
         this.authFacade = authFacade;
         this.serviceManager = serviceManager;
         this.scanner = scanner;
         this.usuario = usuario;
+        this.contextoAutenticacion = contextoAutenticacion;
     }
 
-    /**
-     * Muestra el menú principal para el usuario, permitiéndole elegir opciones para administrar la cuenta,
-     * realizar búsquedas en el catálogo (sencilla o avanzada) o cerrar sesión.
-     */
     public void mostrarMenu() {
         boolean sesionActiva = true;
         while (sesionActiva) {
+            // Verificamos si la sesión ha expirado antes de continuar
+            contextoAutenticacion.accederServicio();
+
+            if (contextoAutenticacion.getEstado() instanceof EstadoSesionExpirada) {
+                System.out.println("Sesión expirada. Inicie sesión nuevamente.");
+                sesionActiva = false;
+                break;
+            }
+
             System.out.println("\n=== Menú Usuario ===");
             System.out.println("1. Administrar Cuenta");
             System.out.println("2. Buscar en Catálogo (Sencilla)");
@@ -69,17 +52,30 @@ public class MenuUsuario {
 
             switch (opcion) {
                 case 1:
-                    CuentaManager cuentaManager = new CuentaManager(authFacade, serviceManager, scanner, usuario);
-                    cuentaManager.administrarCuenta();
+                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        CuentaManager cuentaManager = new CuentaManager(authFacade, serviceManager, scanner, usuario);
+                        cuentaManager.administrarCuenta();
+                    } else {
+                        System.out.println("Acceso denegado. Inicie sesión.");
+                    }
                     break;
                 case 2:
-                    buscarEnCatalogoSencillo();
+                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        buscarEnCatalogoSencillo();
+                    } else {
+                        System.out.println("Acceso denegado. Inicie sesión.");
+                    }
                     break;
                 case 3:
-                    buscarEnCatalogoAvanzado();
+                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        buscarEnCatalogoAvanzado();
+                    } else {
+                        System.out.println("Acceso denegado. Inicie sesión.");
+                    }
                     break;
                 case 4:
                     System.out.println("Cerrando sesión...");
+                    contextoAutenticacion.cerrarSesion();
                     sesionActiva = false;
                     break;
                 default:
@@ -88,9 +84,7 @@ public class MenuUsuario {
         }
     }
 
-    /**
-     * Realiza una búsqueda sencilla en el catálogo de streaming, solicitando solo el término de búsqueda.
-     */
+
     private void buscarEnCatalogoSencillo() {
         serviceManager.setServicio("WatchMode");
 
@@ -105,10 +99,6 @@ public class MenuUsuario {
         mostrarResultados(resultados);
     }
 
-    /**
-     * Realiza una búsqueda avanzada en el catálogo de streaming, permitiendo especificar el tipo de contenido,
-     * la región y la plataforma de streaming.
-     */
     private void buscarEnCatalogoAvanzado() {
         serviceManager.setServicio("WatchMode");
 
@@ -155,16 +145,10 @@ public class MenuUsuario {
         int sourceId = scanner.nextInt();
         scanner.nextLine(); // Limpiar el buffer
 
-        // Ejecutar la búsqueda avanzada y mostrar resultados
         Collection<SearchResult> resultados = serviceManager.buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
         mostrarResultados(resultados);
     }
 
-    /**
-     * Muestra los resultados de búsqueda obtenidos.
-     *
-     * @param resultados Colección de resultados de búsqueda.
-     */
     private void mostrarResultados(Collection<SearchResult> resultados) {
         if (resultados.isEmpty()) {
             System.out.println("No se encontraron resultados para la búsqueda.");
