@@ -12,6 +12,38 @@ https://api.watchmode.com/
 Se requiere la implementacion de org.json. En el siguiente link se puede encontrar el .jar necesario:
 https://mavenlibs.com/jar/file/org.json/json
 
+## Actualizaciones respecto al Caso 2
+### Se emplean los proveedores: 
+1, Netflix, https://www.netflix.com
+
+2, Disney +, https://www.disneyplus.com/en-cr
+
+3, HBO Max, https://www.max.com/cr/es
+
+4, Amazon Prime, https://www.primevideo.com/offers/nonprimehomepage/ref=dv_web_force_root
+
+### Se emplean los planes:
+1,Plan Básico,5.0,1
+
+2,Plan Premium,10.0,1
+
+3,Plan Básico,8.0,2
+
+4,Plan Premium,14.0,2
+
+5,Plan Básico,10.0,3
+
+6,Plan Premium,16.0,3
+
+7,Plan Básico,9.0,4
+
+8,Plan Premium,15.0,4
+
+### Los usuarios quemados son:
+1,Katheryn Hudson,khudson@gmail.com,1234
+
+2,Admin,admin,admin2
+
 ## Grupo 1
 
 Jose Pablo Navarro Rodriguez

@@ -14,22 +14,22 @@ import java.util.List;
 public class AuthFacade implements AuthService {
 
     /**
-     * Lista de usuarios registrados.
+     * Lista de usuarios registrados en el sistema.
      */
     private List<Usuario> usuarios;
 
     /**
-     * Ruta del archivo donde se almacenan los usuarios.
+     * Ruta del archivo donde se almacenan los datos de los usuarios.
      */
     private static final String FILE_PATH = "usuarios.txt";
 
     /**
      * Constructor de la clase AuthFacade. Inicializa la lista de usuarios y carga
-     * los datos de los usuarios desde el archivo al iniciar.
+     * los datos desde el archivo al iniciar.
      */
     public AuthFacade() {
         usuarios = new ArrayList<>();
-        cargarUsuarios(); // Cargar usuarios al iniciar AuthFacade
+        cargarUsuarios();
     }
 
     /**
@@ -41,7 +41,7 @@ public class AuthFacade implements AuthService {
      */
     @Override
     public Usuario iniciarSesion(String correo, String contrasena) {
-        Usuario usuario = buscarUsuarioPorCorreo(correo);
+        Usuario usuario = obtenerUsuarioPorCorreo(correo);
         if (usuario != null && usuario.getContrasena().equals(contrasena)) {
             return usuario;
         }
@@ -58,13 +58,13 @@ public class AuthFacade implements AuthService {
      */
     @Override
     public boolean registrarUsuario(String nombre, String correo, String contrasena) {
-        if (buscarUsuarioPorCorreo(correo) != null) {
+        if (obtenerUsuarioPorCorreo(correo) != null) {
             return false;
         }
         int nuevoCodigo = usuarios.size() + 1;
         Usuario nuevoUsuario = new Usuario(nuevoCodigo, nombre, correo, contrasena);
         usuarios.add(nuevoUsuario);
-        guardarUsuarios(); // Guardar usuarios al registrar uno nuevo
+        guardarUsuarios();
         return true;
     }
 
@@ -78,7 +78,7 @@ public class AuthFacade implements AuthService {
     @Override
     public boolean cambiarContrasena(Usuario usuario, String nuevaContrasena) {
         usuario.setContrasena(nuevaContrasena);
-        guardarUsuarios(); // Guardar cambios al actualizar la contraseña
+        guardarUsuarios();
         return true;
     }
 
@@ -104,8 +104,7 @@ public class AuthFacade implements AuthService {
      * Si el archivo no existe, se crea una lista vacía de usuarios.
      */
     private void cargarUsuarios() {
-        usuarios.clear(); // Limpiar lista antes de cargar
-
+        usuarios.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -133,7 +132,7 @@ public class AuthFacade implements AuthService {
      * @param correo Correo electrónico del usuario a buscar.
      * @return El objeto Usuario si se encuentra, de lo contrario, null.
      */
-    private Usuario buscarUsuarioPorCorreo(String correo) {
+    public Usuario obtenerUsuarioPorCorreo(String correo) {
         for (Usuario usuario : usuarios) {
             if (usuario.getCorreo().equals(correo)) {
                 return usuario;
