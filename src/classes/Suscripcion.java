@@ -15,6 +15,12 @@ public class Suscripcion {
     boolean activo;
 
     /**
+     * Constructor Vacio
+     */
+    public Suscripcion() {
+    }
+
+    /**
      *
      *
      * @param codigo

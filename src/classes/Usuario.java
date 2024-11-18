@@ -33,6 +33,12 @@ public class Usuario {
     private List<Suscripcion> suscripciones;
 
     /**
+     * Constructor Vacio
+     */
+    public Usuario() {
+    }
+
+    /**
      * Constructor para crear un nuevo usuario con su código, nombre, correo y contraseña.
      *
      * @param codigo     Código único del usuario.
@@ -91,6 +97,33 @@ public class Usuario {
      */
     public List<Suscripcion> getSuscripciones() {
         return suscripciones;
+    }
+
+    /**
+     * Establece un codigo para el usuario.
+     *
+     * @param codigo Codigo del usuario.
+     */
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
+    }
+
+    /**
+     * Establece un nuevo nombre para el usuario.
+     *
+     * @param nombre Nuevo nombre del usuario.
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    /**
+     * Establece una nuevo correo para el usuario.
+     *
+     * @param correo Nuevo correo del usuario.
+     */
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
     /**
