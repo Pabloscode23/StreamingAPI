@@ -1,4 +1,0 @@
-1, Netflix, https://www.netflix.com
-2, Disney +, https://www.disneyplus.com/en-cr
-3, HBO Max, https://www.max.com/cr/es
-4, Amazon Prime, https://www.primevideo.com/offers/nonprimehomepage/ref=dv_web_force_root
