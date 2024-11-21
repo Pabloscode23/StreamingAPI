@@ -13,6 +13,12 @@ public class HistorialVisto {
     private int codigoSerie;
 
     /**
+     * Constructor Vacio
+     */
+    public HistorialVisto() {
+    }
+
+    /**
      * Constructor para crear un nuevo historial de contenido visto.
      *
      * @param codigo el código único del historial.
