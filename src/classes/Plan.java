@@ -2,12 +2,12 @@ package classes;
 
 /**
  * La clase que representa un plan de suscripción disponible
- *
  */
 public class Plan {
     int codigo;
     String nombre;
     float precio;
+    int codigoProveedorArchivo;
 
     /**
      * Constructor Vacio
@@ -15,10 +15,11 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(int codigo, String nombre, float precio) {
+    public Plan(int codigo, String nombre, float precio, int codigoProveedorArchivo) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
+        this.codigoProveedorArchivo = codigoProveedorArchivo;
     }
 
     public void setCodigo(int codigo) {
@@ -45,12 +46,21 @@ public class Plan {
         return precio;
     }
 
+    public int getCodigoProveedorArchivo() {
+        return codigoProveedorArchivo;
+    }
+
+    public void setCodigoProveedorArchivo(int codigoProveedorArchivo) {
+        this.codigoProveedorArchivo = codigoProveedorArchivo;
+    }
+
     @Override
     public String toString() {
         return "Plan{" +
                 "codigo=" + codigo +
                 ", nombre='" + nombre + '\'' +
                 ", precio=" + precio +
+                ", codigoProveedorArchivo=" + codigoProveedorArchivo +
                 '}';
     }
 }

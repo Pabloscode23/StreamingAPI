@@ -44,6 +44,25 @@ https://mavenlibs.com/jar/file/org.json/json
 
 2,Admin,admin,admin2
 
+### Ubicacion de los patrones empleados
+
+- Factory Method: carpeta factory
+- Abstract Method: WatchModeAdapterFactory y WatchModeServiceFactory
+- Builder:
+- Prototype:
+- Singleton: StreamingServiceManager y carpeta database
+- Adapter: StreamingServiceAdapter y WatchModeAdapter
+- Composite:
+- Decorator:
+- Facade: WatchModeService
+- Proxy:
+- Strategy: StreamingService
+- Observer: carpeta observer
+- State: carpeta state
+- Command
+- Chain of Responsability
+
+
 ## Grupo 1
 
 Jose Pablo Navarro Rodriguez
