@@ -5,8 +5,6 @@ import factory.WatchModeServiceFactory;
 import model.SearchResult;
 import model.StreamingService;
 import observer.Observer;
-import classes.Usuario;
-import classes.Suscripcion;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +82,7 @@ public class StreamingServiceManager {
      */
     public void notificarObservadores(String mensaje) {
         for (Observer observador : observadores) {
-            observador.actualizar(mensaje);
+            observador.update(mensaje);
         }
     }
 
@@ -162,7 +160,5 @@ public class StreamingServiceManager {
             return new Vector<>();
         }
     }
-
-
 
 }

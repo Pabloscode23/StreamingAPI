@@ -14,8 +14,8 @@ public interface Observer {
     /**
      * Método para actualizar el estado del observador con un mensaje recibido.
      *
-     * @param mensaje El mensaje que contiene la información que se va a comunicar al observador.
+     * @param message El mensaje que contiene la información que se va a comunicar al observador.
      * El mensaje puede representar cualquier tipo de cambio que haya ocurrido en el sujeto.
      */
-    void actualizar(String mensaje);
+    void update(String message); // Método para recibir actualizaciones
 }

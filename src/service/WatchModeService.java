@@ -24,7 +24,7 @@ import org.json.JSONObject;
  */
 public class WatchModeService implements StreamingService {
 
-    private static final String API_KEY = "XYC7tTUpWat5eJzmlbMgJyKaMKbenW42g0Hamtoh";
+    private static final String API_KEY = "0zt8HW3qrm5NNzODmrBD69uxQ9ktJs67J7arVXKx";
     private static final String BASE_URL = "https://api.watchmode.com/v1/";
 
     /**
