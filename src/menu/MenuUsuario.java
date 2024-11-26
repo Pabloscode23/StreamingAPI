@@ -341,18 +341,13 @@ public class MenuUsuario {
                                     // Si coinciden, mostramos el historial completo
                                     System.out.println("Historial encontrado: " + linea);  // Muestra toda la línea
                                     historialVacio = false;
-                                    break;  // Rompe el bucle de partes porque ya encontramos el historial
+                                    // No rompemos el bucle, seguimos buscando más entradas para este usuario
                                 }
                             } catch (NumberFormatException e) {
                                 // Si ocurre un error al convertir el código, lo mostramos para depuración
-                                System.out.println("Error al convertir el código de usuario: " + e.getMessage());
+                                System.out.println("Error: " + e.getMessage());
                             }
                         }
-                    }
-
-                    // Si ya encontramos el historial del usuario, no seguimos leyendo más líneas
-                    if (!historialVacio) {
-                        break;  // Rompe el bucle principal, ya encontramos el historial
                     }
                 }
             }
