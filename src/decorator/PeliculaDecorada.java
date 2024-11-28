@@ -1,4 +1,4 @@
-package Decorator;
+package decorator;
 
 /**
  * Clase abstracta que implementa la interfaz {@link PeliculaInterface} y proporciona una

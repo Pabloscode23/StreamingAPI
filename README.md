@@ -52,8 +52,8 @@ https://mavenlibs.com/jar/file/org.json/json
 - Prototype: SearchResult y se implementa en WatchModeService
 - Singleton: StreamingServiceManager y carpeta database
 - Adapter: StreamingServiceAdapter y WatchModeAdapter
-- Composite:
-- Decorator: Carpeta Decorator
+- Composite: Carpeta menu, en MenuUsuario se emplea el patron directamente
+- decorator: Carpeta decorator
 - Facade: WatchModeService
 - Proxy:
 - Strategy: StreamingService

@@ -1,4 +1,4 @@
-package Decorator;
+package decorator;
 
 /**
  * Interfaz que define los métodos básicos para la clase Pelicula.
