@@ -4,13 +4,26 @@ import java.util.ArrayList;
 import classes.Usuario;
 import java.sql.*;
 
+/**
+ * Clase UsuarioDAO que proporciona métodos para interactuar con la base de datos
+ */
 public class UsuarioDAO {
     private Connection conn;
 
+    /**
+     * Constructor de UsuarioDAO.
+     * Inicializa la conexión a la base de datos.
+     * @throws SQLException si ocurre un error al obtener la conexión de la base de datos.
+     */
     public UsuarioDAO() throws SQLException {
         this.conn = DatabaseConnection.getInstance().getConnection();
     }
 
+    /**
+     * Inserta un nuevo usuario en la base de datos.
+     * @param usuario Objeto que contiene los datos del usuario a insertar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean insertarUsuario(Usuario usuario) {
         PreparedStatement stmt = null;
 
@@ -29,6 +42,10 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Obtiene una lista de todos los usuarios almacenados en la base de datos.
+     * @return Lista de objetos que representan los usuarios encontrados.
+     */
     public ArrayList<Usuario> listarUsuarios() {
         ArrayList<Usuario> usuarios = new ArrayList<>();
         Statement stmt = null;
@@ -56,6 +73,11 @@ public class UsuarioDAO {
         return usuarios;
     }
 
+    /**
+     * Obtiene un usuario específico según su ID.
+     * @param codigoUsuario ID del usuario que se desea obtener.
+     * @return Lista de objetos que representa el usuario encontrado.
+     */
     public ArrayList<Usuario> listarUsuario(int codigoUsuario) {
         ArrayList<Usuario> usuarios = new ArrayList<>();
         PreparedStatement stmt = null;
@@ -65,7 +87,7 @@ public class UsuarioDAO {
             String query = "SELECT * FROM Users WHERE id = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, codigoUsuario);
-            rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Usuario usuario = new Usuario();
@@ -84,6 +106,11 @@ public class UsuarioDAO {
         return usuarios;
     }
 
+    /**
+     * Actualiza la información de un usuario existente en la base de datos.
+     * @param usuario Objeto con los datos actualizados.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean actualizarUsuario(Usuario usuario) {
         PreparedStatement stmt = null;
 
@@ -103,6 +130,11 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Elimina un usuario de la base de datos según su ID.
+     * @param codigo ID del usuario que se desea eliminar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean eliminarUsuario(int codigo) {
         PreparedStatement stmt = null;
 
@@ -119,11 +151,17 @@ public class UsuarioDAO {
         }
     }
 
-    public boolean iniciarSesion(String correo, String contrasena){
+    /**
+     * Verifica las credenciales de un usuario para iniciar sesión.
+     * @param correo Correo electrónico del usuario.
+     * @param contrasena Contraseña del usuario.
+     * @return true si las credenciales son correctas, false en caso contrario o si ocurre un error.
+     */
+    public boolean iniciarSesion(String correo, String contrasena) {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        try{
+        try {
             String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, correo);
@@ -131,7 +169,7 @@ public class UsuarioDAO {
             rs = stmt.executeQuery();
 
             return rs.next();
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

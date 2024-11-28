@@ -4,13 +4,26 @@ import java.util.ArrayList;
 import classes.Proveedor;
 import java.sql.*;
 
+/**
+ * Clase ProveedorDAO que proporciona métodos para interactuar con la base de datos
+ */
 public class ProveedorDAO {
     private Connection conn;
 
+    /**
+     * Constructor de ProveedorDAO.
+     * Inicializa la conexión a la base de datos.
+     * @throws SQLException si ocurre un error al obtener la conexión de la base de datos.
+     */
     public ProveedorDAO() throws SQLException {
         this.conn = DatabaseConnection.getInstance().getConnection();
     }
 
+    /**
+     * Inserta un nuevo proveedor en la base de datos.
+     * @param proveedor que contiene los datos del proveedor a insertar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean insertarProveedor(Proveedor proveedor) {
         PreparedStatement stmt = null;
 
@@ -28,6 +41,10 @@ public class ProveedorDAO {
         }
     }
 
+    /**
+     * Obtiene una lista de todos los proveedores almacenados en la base de datos.
+     * @return Lista de objetos que representan los proveedores encontrados.
+     */
     public ArrayList<Proveedor> listarProveedores() {
         ArrayList<Proveedor> proveedores = new ArrayList<>();
         Statement stmt = null;
@@ -54,11 +71,16 @@ public class ProveedorDAO {
         return proveedores;
     }
 
+    /**
+     * Actualiza los datos de un proveedor existente en la base de datos.
+     * @param proveedor Objeto que contiene los nuevos datos del proveedor.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean actualizarProveedor(Proveedor proveedor) {
         PreparedStatement stmt = null;
 
         try {
-            String query = "UPDATE Proveedor SET name = ?, url = ? WHERE id = ?";
+            String query = "UPDATE Providers SET name = ?, url = ? WHERE id = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, proveedor.getNombre());
             stmt.setString(2, proveedor.getUrl());
@@ -72,6 +94,11 @@ public class ProveedorDAO {
         }
     }
 
+    /**
+     * Elimina un proveedor de la base de datos.
+     * @param codigo ID del proveedor que se desea eliminar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean eliminarProveedor(int codigo) {
         PreparedStatement stmt = null;
 

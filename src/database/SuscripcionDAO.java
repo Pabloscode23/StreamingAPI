@@ -4,13 +4,26 @@ import classes.Suscripcion;
 import java.util.ArrayList;
 import java.sql.*;
 
+/**
+ * Clase SuscripcionDAO que proporciona métodos para interactuar con la base de datos
+ */
 public class SuscripcionDAO {
     private Connection conn;
 
+    /**
+     * Constructor de SuscripcionDAO.
+     * Inicializa la conexión a la base de datos.
+     * @throws SQLException si ocurre un error al obtener la conexión de la base de datos.
+     */
     public SuscripcionDAO() throws SQLException {
         this.conn = DatabaseConnection.getInstance().getConnection();
     }
 
+    /**
+     * Inserta una nueva suscripción en la base de datos.
+     * @param suscripcion Objeto que contiene los datos de la suscripción a insertar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean insertarSuscripcion(Suscripcion suscripcion) {
         PreparedStatement stmt = null;
 
@@ -31,6 +44,10 @@ public class SuscripcionDAO {
         }
     }
 
+    /**
+     * Obtiene una lista de todas las suscripciones almacenadas en la base de datos.
+     * @return Lista de objetos que representan las suscripciones encontradas.
+     */
     public ArrayList<Suscripcion> listarSuscripciones() {
         ArrayList<Suscripcion> suscripciones = new ArrayList<>();
         Statement stmt = null;
@@ -60,6 +77,11 @@ public class SuscripcionDAO {
         return suscripciones;
     }
 
+    /**
+     * Obtiene las suscripciones de un usuario específico.
+     * @param codigoUsuario ID del usuario cuyas suscripciones se desean obtener.
+     * @return Lista de objetos que representan las suscripciones del usuario encontrado.
+     */
     public ArrayList<Suscripcion> listarSuscripcion(int codigoUsuario) {
         ArrayList<Suscripcion> suscripciones = new ArrayList<>();
         PreparedStatement stmt = null;
@@ -69,7 +91,7 @@ public class SuscripcionDAO {
             String query = "SELECT * FROM Subscriptions WHERE id_user = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, codigoUsuario);
-            rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Suscripcion suscripcion = new Suscripcion();
@@ -90,6 +112,11 @@ public class SuscripcionDAO {
         return suscripciones;
     }
 
+    /**
+     * Actualiza el estado de una suscripción en la base de datos.
+     * @param suscripcion Objeto con el estado actualizado.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean actualizarSuscripcion(Suscripcion suscripcion) {
         PreparedStatement stmt = null;
 
@@ -107,8 +134,14 @@ public class SuscripcionDAO {
         }
     }
 
+    /**
+     * Elimina una suscripción de la base de datos según su ID.
+     * @param codigo ID de la suscripción que se desea eliminar.
+     * @return true si la operación fue exitosa, false si ocurrió un error.
+     */
     public boolean eliminarSuscripcion(int codigo) {
         PreparedStatement stmt = null;
+
         try {
             String query = "DELETE FROM Subscriptions WHERE id = ?";
             stmt = conn.prepareStatement(query);
