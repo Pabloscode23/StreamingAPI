@@ -1,4 +1,6 @@
 import facade.AuthFacade;
+import proxy.ProxyUsuarioAutenticado;
+import proxy.UsuarioAutenticado;
 import state.*;
 import classes.Usuario;
 import menu.MenuUsuario;
@@ -96,12 +98,17 @@ public class Main {
         System.out.print("Contraseña: ");
         String contrasena = scanner.nextLine();
 
-        Usuario usuario = authFacade.iniciarSesion(correo, contrasena);
-        if (usuario != null) {
-            System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
-            contexto.setEstado(new EstadoAutenticado());
-            contexto.setUsuarioAutenticado(usuario); // Pasamos el objeto Usuario completo
-            contexto.setToken("TOKEN_GENERADO"); // Genera un token real en una implementación completa
+        // Usamos el Proxy, pero ahora pasamos el authFacade
+        UsuarioAutenticado proxyUsuario = new ProxyUsuarioAutenticado(correo, contrasena, authFacade);
+
+        if (proxyUsuario.iniciarSesion(correo, contrasena)) {
+            Usuario usuario = proxyUsuario.obtenerUsuario();  // Obtenemos al usuario autenticado
+            if (usuario != null) {
+                System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
+                contexto.setEstado(new EstadoAutenticado());
+                contexto.setUsuarioAutenticado(usuario); // Pasamos el objeto Usuario completo
+                contexto.setToken("TOKEN_GENERADO"); // Genera un token real en una implementación completa
+            }
         } else {
             System.out.println("Correo o contraseña incorrectos.");
         }

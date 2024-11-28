@@ -37,6 +37,10 @@ public class Usuario {
      */
     public Usuario() {
     }
+    public Usuario(String correo, String nombre) {
+        this.correo = correo;
+        this.nombre = nombre;
+    }
 
     /**
      * Constructor para crear un nuevo usuario con su código, nombre, correo y contraseña.

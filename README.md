@@ -55,7 +55,7 @@ https://mavenlibs.com/jar/file/org.json/json
 - Composite: Carpeta menu, en MenuUsuario se emplea el patron directamente
 - decorator: Carpeta decorator
 - Facade: WatchModeService
-- Proxy:
+- Proxy: carpeta proxy e implementacion en iniciarSesion del Main
 - Strategy: StreamingService
 - Observer: carpeta observer
 - State: carpeta state
