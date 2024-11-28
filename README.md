@@ -48,8 +48,8 @@ https://mavenlibs.com/jar/file/org.json/json
 
 - Factory Method: carpeta factory
 - Abstract Method: WatchModeAdapterFactory y WatchModeServiceFactory
-- Builder:
-- Prototype:
+
+- Prototype: SearchResult y se implementa en WatchModeService
 - Singleton: StreamingServiceManager y carpeta database
 - Adapter: StreamingServiceAdapter y WatchModeAdapter
 - Composite:
@@ -59,8 +59,7 @@ https://mavenlibs.com/jar/file/org.json/json
 - Strategy: StreamingService
 - Observer: carpeta observer
 - State: carpeta state
-- Command
-- Chain of Responsability
+
 
 
 ## Grupo 1

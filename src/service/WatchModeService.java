@@ -92,7 +92,12 @@ public class WatchModeService implements StreamingService {
                     String urlLink = "No disponible";
                     String subType = "No disponible";
 
-                    SearchResult searchResult = new SearchResult(name, description, urlLink, platform, subType);
+                    // Crear una instancia de SearchResult
+                    SearchResult baseResult = new SearchResult(name, description, urlLink, platform, subType);
+
+                    // Clonar si es necesario (no es redundante aquí)
+                    SearchResult searchResult = baseResult.clone();
+
                     resultados.add(searchResult);
                 }
             } else {
@@ -119,7 +124,6 @@ public class WatchModeService implements StreamingService {
         Collection<SearchResult> resultados = new ArrayList<>();
 
         try {
-            // Paso 1: Primera búsqueda para obtener el ID del título
             String endpoint = BASE_URL + "search/?apiKey=" + API_KEY +
                     "&search_field=name&search_value=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString()) +
                     "&types=" + tipoContenido;
@@ -148,15 +152,13 @@ public class WatchModeService implements StreamingService {
                     String name = firstResult.getString("name");
                     int year = firstResult.getInt("year");
 
-                    // Obtener la sinopsis (plot_overview) del título
                     String detailsEndpoint = BASE_URL + "title/" + id + "/details/?apiKey=" + API_KEY;
                     URL detailsUrl = new URL(detailsEndpoint);
                     HttpURLConnection detailsConn = (HttpURLConnection) detailsUrl.openConnection();
                     detailsConn.setRequestMethod("GET");
 
-                    int detailsResponseCode = detailsConn.getResponseCode();
                     String plotOverview = "Sinopsis no disponible";
-                    if (detailsResponseCode == 200) {
+                    if (detailsConn.getResponseCode() == 200) {
                         BufferedReader detailsIn = new BufferedReader(new InputStreamReader(detailsConn.getInputStream()));
                         StringBuilder detailsResponse = new StringBuilder();
                         while ((inputLine = detailsIn.readLine()) != null) {
@@ -168,14 +170,12 @@ public class WatchModeService implements StreamingService {
                         plotOverview = detailsJsonResponse.optString("plot_overview", plotOverview);
                     }
 
-                    // Obtener las fuentes (sources) donde está disponible el título
                     String sourcesEndpoint = BASE_URL + "title/" + id + "/sources/?apiKey=" + API_KEY + "&regions=" + region;
                     URL sourcesUrl = new URL(sourcesEndpoint);
                     HttpURLConnection sourcesConn = (HttpURLConnection) sourcesUrl.openConnection();
                     sourcesConn.setRequestMethod("GET");
 
-                    int sourcesResponseCode = sourcesConn.getResponseCode();
-                    if (sourcesResponseCode == 200) {
+                    if (sourcesConn.getResponseCode() == 200) {
                         BufferedReader sourcesIn = new BufferedReader(new InputStreamReader(sourcesConn.getInputStream()));
                         StringBuilder sourcesResponse = new StringBuilder();
                         while ((inputLine = sourcesIn.readLine()) != null) {
@@ -184,16 +184,14 @@ public class WatchModeService implements StreamingService {
                         sourcesIn.close();
 
                         JSONArray sourcesArray = new JSONArray(sourcesResponse.toString());
+                        SearchResult baseResult = new SearchResult(name, plotOverview, "URL no disponible", "Plataforma base", "Tipo base");
 
                         for (int i = 0; i < sourcesArray.length(); i++) {
                             JSONObject source = sourcesArray.getJSONObject(i);
                             if (source.getInt("source_id") == sourceId) {
-                                String platformName = source.getString("name");
-                                String webUrl = source.optString("web_url", "URL no disponible");
-                                String subType = source.getString("type");
-
-                                SearchResult searchResult = new SearchResult(name, plotOverview, webUrl, platformName, subType);
-                                resultados.add(searchResult);
+                                SearchResult result = baseResult.clone();
+                                result = new SearchResult(result.getTitulo(), result.getDescripcion(), source.optString("web_url", "URL no disponible"), source.getString("name"), source.getString("type"));
+                                resultados.add(result);
                             }
                         }
                     }
