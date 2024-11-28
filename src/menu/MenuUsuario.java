@@ -1,18 +1,15 @@
 package menu;
 
-import facade.AuthFacade;
-import classes.Usuario;
-import observer.Observer;
+import service.StreamingServiceManager;
+import observer.WatchModeSubject;
 import observer.ReleaseObserver;
 import observer.WatchModeAPI;
-import service.StreamingServiceManager;
 import model.SearchResult;
-import state.*;
+import facade.AuthFacade;
+import classes.Usuario;
+import java.util.*;
 import java.io.*;
-import java.util.Collection;
-import java.util.Scanner;
-import java.util.Vector;
-import observer.WatchModeSubject;
+import state.*;
 
 public class MenuUsuario {
 
@@ -118,7 +115,7 @@ public class MenuUsuario {
                 break;
             }
 
-            menuPrincipal = new CompositeMenu("=== Menú Usuario ===");
+            menuPrincipal = new CompositeMenu("\n=== Menú Usuario ===");
 
             // Crear opciones de menú
             ComponenteMenu administrarCuenta = new ElementoMenu("1. Administrar Cuenta");
@@ -140,8 +137,31 @@ public class MenuUsuario {
             menuPrincipal.agregarComponente(verNotificaciones);
             menuPrincipal.agregarComponente(cerrarSesion);
             menuPrincipal.mostrar();
-            int opcion = scanner.nextInt();
-            scanner.nextLine();
+
+            System.out.print("Seleccione una opción: ");
+
+            int opcion = -1; // Iniciar la variable en un valor que no sea una opción válida
+            boolean opcionValida = false;
+
+            // Mientras la opción no sea válida, seguir pidiendo la entrada
+            while (!opcionValida) {
+                try {
+                    opcion = scanner.nextInt(); // Intentar leer la opción como un número entero
+                    scanner.nextLine(); // Limpiar el buffer
+
+                    // Validar que la opción esté dentro del rango esperado
+                    if (opcion < 1 || opcion > 6) {
+                        System.out.println("Opción inválida, intente nuevamente.");
+                    } else {
+                        opcionValida = true; // Opción válida, salir del bucle
+                    }
+
+                } catch (InputMismatchException e) {
+                    // Capturar el error si el usuario ingresa algo que no sea un número
+                    System.out.println("Por favor, ingrese una opción válida.");
+                    scanner.nextLine(); // Limpiar el buffer de entrada para evitar bucles infinitos
+                }
+            }
 
             switch (opcion) {
                 case 1:
@@ -154,6 +174,7 @@ public class MenuUsuario {
                     break;
                 case 2:
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        mostrarSugerencias();
                         buscarEnCatalogoSencillo();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
@@ -161,6 +182,7 @@ public class MenuUsuario {
                     break;
                 case 3:
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        mostrarSugerencias();
                         buscarEnCatalogoAvanzado();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
@@ -181,12 +203,12 @@ public class MenuUsuario {
                     }
                     break;
                 case 6:
-                    System.out.println("Cerrando sesión...");
+                    System.out.println("\nCerrando sesión...");
                     contextoAutenticacion.cerrarSesion();
                     sesionActiva = false;
                     break;
                 default:
-                    System.out.println("Opción inválida, intente nuevamente.");
+                    System.out.println("\nOpción inválida, intente nuevamente.");
             }
         }
     }
@@ -376,6 +398,7 @@ public class MenuUsuario {
             System.out.println("Error al leer el historial: " + e.getMessage());
         }
     }
+
     public void verNotificaciones() {
         if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
             // Llamar al método para obtener las notificaciones desde la API
@@ -385,6 +408,84 @@ public class MenuUsuario {
         }
     }
 
+    public void mostrarSugerencias() {
+        System.out.println("\n=== Generando Recomendaciones Personalizadas ===");
+
+        String nombreUsuario = usuario.getNombre(); // Código del usuario autenticado
+        List<String> titulosVistos = new ArrayList<>(); // Para almacenar los títulos del historial
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(HISTORIAL_ARCHIVO))) {
+            String linea;
+
+            while ((linea = reader.readLine()) != null) {
+                if (linea.contains("Usuario: ")) {
+                    String[] partes = linea.split(",");
+                    for (String parte : partes) {
+                        if (parte.trim().startsWith("Usuario: ")) {
+                            String usuarioHistorialString = parte.trim().replace("Usuario: ", "").trim();
+
+                            try {
+                                if (usuarioHistorialString.equals(nombreUsuario)) {
+                                    // Extraemos el título del contenido visto
+                                    for (String detalle : partes) {
+                                        if (detalle.trim().startsWith("Título: ")) {
+                                            String titulo = detalle.trim().replace("Título: ", "").trim();
+                                            titulosVistos.add(titulo);
+                                        }
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Error al procesar el historial: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el historial: " + e.getMessage());
+        }
+
+        // Si no hay títulos vistos, mostramos un mensaje
+        if (titulosVistos.isEmpty()) {
+            System.out.println("No se encontraron títulos en el historial del usuario.");
+            return;
+        }
+
+        // Buscar recomendaciones para cada título del historial
+        for (String titulo : titulosVistos) {
+            System.out.println("\nBuscando contenido relacionado con: " + titulo);
+            buscarRecomendacionesPorTitulo(titulo);
+        }
+    }
+
+    /**
+     * Realiza una búsqueda avanzada utilizando un título del historial.
+     *
+     * @param titulo El título del contenido para buscar recomendaciones relacionadas.
+     */
+    public void buscarRecomendacionesPorTitulo(String titulo) {
+        // Configurar el servicio
+        serviceManager.setServicio("WatchMode");
+
+        int[] proveedores = {203, 157, 387, 26, 372, 371, 444, 369, 368, 80};
+        Random random = new Random();
+        int indiceAleatorio = random.nextInt(proveedores.length);
+
+        String tipoContenido = "movie"; // Buscar tanto películas como series
+        String region = "US"; // Región predeterminada
+        int sourceId = proveedores[indiceAleatorio];// Filtro de plataforma
+
+        // Realizar búsqueda avanzada con el título
+        Collection<SearchResult> resultados = serviceManager.buscarConFiltrosAvanzados(titulo, tipoContenido, region, sourceId);
+
+        // Mostrar resultados
+        if (resultados.isEmpty()) {
+            System.out.println("No se encontraron recomendaciones para: " + titulo);
+        } else {
+            System.out.println("\nRecomendaciones basadas en " + titulo + ":");
+            mostrarResultados(resultados);
+        }
+    }
 
 }
 
