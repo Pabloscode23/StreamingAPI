@@ -19,7 +19,7 @@ public class MenuUsuario {
     // Atributos para WatchMode
     private WatchModeSubject watchModeSubject; // Para gestionar los observadores
     private WatchModeAPI watchModeAPI;         // Para obtener las notificaciones desde la API
-
+    private CompositeMenu menuPrincipal;
     // Otros atributos
     private AuthFacade authFacade;
     private StreamingServiceManager serviceManager;
@@ -118,14 +118,28 @@ public class MenuUsuario {
                 break;
             }
 
-            System.out.println("\n=== Menú Usuario ===");
-            System.out.println("1. Administrar Cuenta");
-            System.out.println("2. Buscar en Catálogo (Sencilla)");
-            System.out.println("3. Buscar en Catálogo (Avanzada)");
-            System.out.println("4. Ver Mi Historial");
-            System.out.println("5. Ver Notificaciones");
-            System.out.println("6. Cerrar Sesión");
-            System.out.print("Seleccione una opción: ");
+            menuPrincipal = new CompositeMenu("=== Menú Usuario ===");
+
+            // Crear opciones de menú
+            ComponenteMenu administrarCuenta = new ElementoMenu("1. Administrar Cuenta");
+            ComponenteMenu buscarCatalogoSencillo = new ElementoMenu("2. Buscar en Catálogo (Sencilla)");
+            ComponenteMenu buscarCatalogoAvanzado = new ElementoMenu("3. Buscar en Catálogo (Avanzada)");
+            ComponenteMenu verHistorial = new ElementoMenu("4. Ver Mi Historial");
+            ComponenteMenu verNotificaciones = new ElementoMenu("5. Ver Notificaciones");
+            ComponenteMenu cerrarSesion = new ElementoMenu("6. Cerrar Sesión");
+
+            // Crear un submenú si es necesario
+            CompositeMenu subMenuCuenta = new CompositeMenu("Submenú de Cuenta");
+            subMenuCuenta.agregarComponente(administrarCuenta);
+
+            // Agregar todos los elementos al menú principal
+            menuPrincipal.agregarComponente(subMenuCuenta);
+            menuPrincipal.agregarComponente(buscarCatalogoSencillo);
+            menuPrincipal.agregarComponente(buscarCatalogoAvanzado);
+            menuPrincipal.agregarComponente(verHistorial);
+            menuPrincipal.agregarComponente(verNotificaciones);
+            menuPrincipal.agregarComponente(cerrarSesion);
+            menuPrincipal.mostrar();
             int opcion = scanner.nextInt();
             scanner.nextLine();
 
