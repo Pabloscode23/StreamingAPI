@@ -1,11 +1,12 @@
-import facade.AuthFacade;
+import java.util.InputMismatchException;
+import service.StreamingServiceManager;
 import proxy.ProxyUsuarioAutenticado;
 import proxy.UsuarioAutenticado;
-import state.*;
-import classes.Usuario;
-import menu.MenuUsuario;
-import service.StreamingServiceManager;
+import facade.AuthFacade;
 import java.util.Scanner;
+import menu.MenuUsuario;
+import classes.Usuario;
+import state.*;
 
 /**
  * Clase principal que inicia la aplicación, proporcionando opciones de inicio de sesión,
@@ -29,24 +30,45 @@ public class Main {
         boolean continuar = true;
 
         while (continuar) {
-            System.out.println("=== Menú Principal ===");
+            System.out.println("\n=== Menú Principal ===");
 
             if (contexto.haySesionActiva()) {
                 System.out.println("Estado de Sesión: Activa");
-                System.out.println("1. Continuar como: ");
+                System.out.println("\n1. Continuar como: ");
                 System.out.println(contexto.getUsuarioAutenticado());
-                System.out.println("2. Cerrar Sesión");
+                System.out.println("\n2. Cerrar Sesión");
                 System.out.println("3. Salir");
             } else {
                 System.out.println("Estado de Sesión: Inactiva");
-                System.out.println("1. Iniciar sesión");
+                System.out.println("\n1. Iniciar sesión");
                 System.out.println("2. Registrarse");
                 System.out.println("3. Salir");
             }
 
             System.out.print("Seleccione una opción: ");
-            int opcion = scanner.nextInt();
-            scanner.nextLine();
+
+            int opcion = -1; // Iniciar la variable en un valor que no sea una opción válida
+            boolean opcionValida = false;
+
+            // Mientras la opción no sea válida, seguir pidiendo la entrada
+            while (!opcionValida) {
+                try {
+                    opcion = scanner.nextInt(); // Intentar leer la opción como un número entero
+                    scanner.nextLine(); // Limpiar el buffer
+
+                    // Validar que la opción esté dentro del rango esperado
+                    if (opcion < 1 || opcion > 3) {
+                        System.out.println("Opción inválida, intente nuevamente.");
+                    } else {
+                        opcionValida = true; // Opción válida, salir del bucle
+                    }
+
+                } catch (InputMismatchException e) {
+                    // Capturar el error si el usuario ingresa algo que no sea un número
+                    System.out.println("Por favor, ingrese una opción válida.");
+                    scanner.nextLine(); // Limpiar el buffer de entrada para evitar bucles infinitos
+                }
+            }
 
             if (contexto.haySesionActiva()) {
                 switch (opcion) {
@@ -57,11 +79,11 @@ public class Main {
                         contexto.cerrarSesion();
                         break;
                     case 3:
-                        System.out.println("Saliendo...");
+                        System.out.println("\nSaliendo...");
                         continuar = false;
                         break;
                     default:
-                        System.out.println("Opción inválida, intente nuevamente.");
+                        System.out.println("\nOpción inválida, intente nuevamente.");
                 }
             } else {
                 switch (opcion) {
@@ -72,11 +94,11 @@ public class Main {
                         registrarse(authFacade, scanner);
                         break;
                     case 3:
-                        System.out.println("Saliendo...");
+                        System.out.println("\nSaliendo...");
                         continuar = false;
                         break;
                     default:
-                        System.out.println("Opción inválida, intente nuevamente.");
+                        System.out.println("\nOpción inválida, intente nuevamente.");
                 }
             }
         }
@@ -104,13 +126,13 @@ public class Main {
         if (proxyUsuario.iniciarSesion(correo, contrasena)) {
             Usuario usuario = proxyUsuario.obtenerUsuario();  // Obtenemos al usuario autenticado
             if (usuario != null) {
-                System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
+                System.out.println("\nInicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
                 contexto.setEstado(new EstadoAutenticado());
                 contexto.setUsuarioAutenticado(usuario); // Pasamos el objeto Usuario completo
                 contexto.setToken("TOKEN_GENERADO"); // Genera un token real en una implementación completa
             }
         } else {
-            System.out.println("Correo o contraseña incorrectos.");
+            System.out.println("\nCorreo o contraseña incorrectos.");
         }
     }
 
@@ -125,8 +147,9 @@ public class Main {
      */
     private static void iniciarSesionAutomatica(AuthFacade authFacade, StreamingServiceManager serviceManager, ContextoAutenticacion contexto, Scanner scanner) {
         Usuario usuario = contexto.getUsuarioAutenticado(); // Obtener el objeto Usuario directamente
+
         if (usuario != null) {
-            System.out.println("Continuando como " + usuario.getNombre() + "...");
+            System.out.println("\nContinuando como " + usuario.getNombre() + "...");
             MenuUsuario menuUsuario = new MenuUsuario(authFacade, serviceManager, scanner, usuario, contexto);
             menuUsuario.mostrarMenu();
         } else {
@@ -155,9 +178,9 @@ public class Main {
         String contrasena = scanner.nextLine();
 
         if (authFacade.registrarUsuario(nombreCompleto, correo, contrasena)) {
-            System.out.println("Registro exitoso. Ahora puede iniciar sesión.");
+            System.out.println("\nRegistro exitoso. Ahora puede iniciar sesión.");
         } else {
-            System.out.println("El correo ya está registrado.");
+            System.out.println("\nEl correo ya está registrado.");
         }
     }
 }
