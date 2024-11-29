@@ -1,5 +1,23 @@
 # StreamingAPI
 
+
+Universidad Cenfotec
+
+Curso: Programación con Patrones
+Profesor: Valentín Secades Méndez
+
+## Grupo 1
+
+Jose Pablo Navarro Rodriguez
+
+Isabella Nassar Míguez
+
+Cristopher Leiton Duran
+
+Fabiola Zuñiga Vargas
+
+Diego Alonso Selva Arrieta
+
 Este proyecto forma parte del curso de Programacion con Patrones.
 
 ---
@@ -60,16 +78,3 @@ https://mavenlibs.com/jar/file/org.json/json
 - Observer: carpeta observer
 - State: carpeta state
 
-
-
-## Grupo 1
-
-Jose Pablo Navarro Rodriguez
-
-Isabella Nassar Míguez
-
-Cristopher Leiton Duran
-
-Fabiola Zuñiga Vargas
-
-Diego Alonso Selva Arrieta
