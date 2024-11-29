@@ -11,6 +11,18 @@ import java.util.*;
 import java.io.*;
 import state.*;
 
+/**
+ * Clase que representa el menú principal de interacción para un usuario autenticado.
+ *
+ * Proporciona opciones para administrar la cuenta, realizar búsquedas de contenido
+ * en diferentes catálogos de streaming, ver notificaciones y gestionar el historial
+ * de visualizaciones.
+ *
+ * También integra funcionalidades avanzadas como recomendaciones basadas en el historial
+ * del usuario y notificaciones en tiempo real de nuevos lanzamientos utilizando observadores
+ * de WatchMode.
+ */
+
 public class MenuUsuario {
 
     // Atributos para WatchMode
@@ -27,15 +39,19 @@ public class MenuUsuario {
     private static final String HISTORIAL_ARCHIVO = "historial_visto.txt"; // Ruta del archivo de historial
 
     /**
-     * Constructor que inicializa el menú de usuario con la fachada de autenticación,
-     * el gestor de servicios de streaming, el escáner y el contexto de autenticación.
+     * Constructor de la clase `MenuUsuario`.
      *
-     * @param authFacade            Fachada de autenticación para realizar operaciones de usuario.
-     * @param serviceManager        Gestor de servicios de streaming.
-     * @param scanner               Escáner para la entrada de usuario.
-     * @param usuario               Usuario actual que está interactuando con el menú.
-     * @param contextoAutenticacion Contexto de autenticación para gestionar el estado de sesión del usuario.
+     * Inicializa los servicios necesarios para la autenticación, el manejo del catálogo
+     * de streaming, y la gestión de notificaciones, así como los elementos para interactuar
+     * con el usuario.
+     *
+     * @param authFacade            Fachada de autenticación para las operaciones relacionadas con usuarios.
+     * @param serviceManager        Gestor de servicios de streaming para manejar las búsquedas.
+     * @param scanner               Objeto `Scanner` para capturar la entrada del usuario.
+     * @param usuario               Instancia del usuario autenticado.
+     * @param contextoAutenticacion Contexto para gestionar el estado de autenticación del usuario.
      */
+
     public MenuUsuario(AuthFacade authFacade, StreamingServiceManager serviceManager, Scanner scanner, Usuario usuario, ContextoAutenticacion contextoAutenticacion) {
         this.authFacade = authFacade;
         this.serviceManager = serviceManager;
@@ -119,11 +135,13 @@ public class MenuUsuario {
 
             // Crear opciones de menú
             ComponenteMenu administrarCuenta = new ElementoMenu("1. Administrar Cuenta");
-            ComponenteMenu buscarCatalogoSencillo = new ElementoMenu("2. Buscar en Catálogo (Sencilla)");
-            ComponenteMenu buscarCatalogoAvanzado = new ElementoMenu("3. Buscar en Catálogo (Avanzada)");
-            ComponenteMenu verHistorial = new ElementoMenu("4. Ver Mi Historial");
-            ComponenteMenu verNotificaciones = new ElementoMenu("5. Ver Notificaciones");
-            ComponenteMenu cerrarSesion = new ElementoMenu("6. Cerrar Sesión");
+            ComponenteMenu buscarCatalogoSencillo = new ElementoMenu("2. Busqueda Sencilla - WatchMode");
+            ComponenteMenu buscarCatalogoAvanzado = new ElementoMenu("3. Busqueda Avanzada - WatchMode");
+            ComponenteMenu buscarCatalogoSencillo2 = new ElementoMenu("4. Busqueda Sencilla - Streaming Availability");
+            ComponenteMenu buscarCatalogoAvanzado2 = new ElementoMenu("5. Busqueda Avanzada - Streaming Availability");
+            ComponenteMenu verHistorial = new ElementoMenu("6. Ver Mi Historial");
+            ComponenteMenu verNotificaciones = new ElementoMenu("7. Ver Notificaciones");
+            ComponenteMenu cerrarSesion = new ElementoMenu("8. Cerrar Sesión");
 
             // Crear un submenú si es necesario
             CompositeMenu subMenuCuenta = new CompositeMenu("Submenú de Cuenta");
@@ -133,6 +151,8 @@ public class MenuUsuario {
             menuPrincipal.agregarComponente(subMenuCuenta);
             menuPrincipal.agregarComponente(buscarCatalogoSencillo);
             menuPrincipal.agregarComponente(buscarCatalogoAvanzado);
+            menuPrincipal.agregarComponente(buscarCatalogoSencillo2);
+            menuPrincipal.agregarComponente(buscarCatalogoAvanzado2);
             menuPrincipal.agregarComponente(verHistorial);
             menuPrincipal.agregarComponente(verNotificaciones);
             menuPrincipal.agregarComponente(cerrarSesion);
@@ -150,7 +170,7 @@ public class MenuUsuario {
                     scanner.nextLine(); // Limpiar el buffer
 
                     // Validar que la opción esté dentro del rango esperado
-                    if (opcion < 1 || opcion > 6) {
+                    if (opcion < 1 || opcion > 8) {
                         System.out.println("Opción inválida, intente nuevamente.");
                     } else {
                         opcionValida = true; // Opción válida, salir del bucle
@@ -190,19 +210,35 @@ public class MenuUsuario {
                     break;
                 case 4:
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        verHistorial();  // Ver el historial del usuario
+                        mostrarSugerencias();
+                        buscarEnCatalogoSencillo2();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
                 case 5:
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        verNotificaciones();  // Ver notificaciones / actualizaciones de contenido
+                        mostrarSugerencias();
+                        buscarEnCatalogoAvanzado2();
                     } else {
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
                 case 6:
+                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        verHistorial();  // Ver el historial del usuario
+                    } else {
+                        System.out.println("Acceso denegado. Inicie sesión.");
+                    }
+                    break;
+                case 7:
+                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        verNotificaciones();  // Ver notificaciones / actualizaciones de contenido
+                    } else {
+                        System.out.println("Acceso denegado. Inicie sesión.");
+                    }
+                    break;
+                case 8:
                     System.out.println("\nCerrando sesión...");
                     contextoAutenticacion.cerrarSesion();
                     sesionActiva = false;
@@ -214,12 +250,14 @@ public class MenuUsuario {
     }
 
     /**
-     * Realiza una búsqueda sencilla en el catálogo de streaming, solicitando solo el término de búsqueda.
+     * Realiza una búsqueda sencilla en el catálogo de WatchMode.
+     *
+     * Solicita al usuario un término de búsqueda y muestra los resultados encontrados.
      */
     private void buscarEnCatalogoSencillo() {
         serviceManager.setServicio("WatchMode");
 
-        System.out.println("\n=== Búsqueda Sencilla en el Catálogo ===");
+        System.out.println("\n=== Búsqueda Sencilla en el Catálogo de WatchMode ===");
         System.out.print("Ingrese el término de búsqueda (nombre de la película o serie): ");
         String query = scanner.nextLine();
 
@@ -231,13 +269,14 @@ public class MenuUsuario {
     }
 
     /**
-     * Realiza una búsqueda avanzada en el catálogo de streaming, permitiendo especificar el tipo de contenido,
-     * la región y la plataforma de streaming.
+     * Realiza una búsqueda avanzada en el catálogo de WatchMode.
+     *
+     * Permite al usuario especificar filtros como tipo de contenido, región y plataforma de streaming.
      */
     private void buscarEnCatalogoAvanzado() {
         serviceManager.setServicio("WatchMode");
 
-        System.out.println("\n=== Búsqueda Avanzada en el Catálogo ===");
+        System.out.println("\n=== Búsqueda Avanzada en el Catálogo de WatchMode ===");
 
         System.out.print("Ingrese el término de búsqueda (nombre de la película o serie): ");
         String query = scanner.nextLine().toLowerCase();
@@ -250,7 +289,7 @@ public class MenuUsuario {
         int tipoOpcion = scanner.nextInt();
         scanner.nextLine(); // Limpiar el buffer
 
-        String tipoContenido = (tipoOpcion == 1) ? "movie" : "tv_movie";
+        String tipoContenido = (tipoOpcion == 1) ? "movie" : "tv";
 
         // Mostrar opciones de región
         System.out.println("\nRegiones disponibles:");
@@ -283,6 +322,116 @@ public class MenuUsuario {
         Collection<SearchResult> resultados = serviceManager.buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
         mostrarResultados(resultados);
     }
+
+    /**
+     * Realiza una búsqueda sencilla en el catálogo de Streaming Availability.
+     *
+     * Solicita al usuario un término de búsqueda y muestra los resultados encontrados.
+     */
+
+    private void buscarEnCatalogoSencillo2() {
+        serviceManager.setServicio("StreamingAvailability");
+
+        System.out.println("\n=== Búsqueda Sencilla en el Catálogo de Streaming Availability ===");
+
+        // Solicitar el término de búsqueda
+        System.out.print("Ingrese el término de búsqueda (nombre de la película o serie): ");
+        String query = scanner.nextLine();
+
+        // Solicitar el tipo de contenido
+        System.out.println("Seleccione el tipo de contenido:");
+        System.out.println("1. Película");
+        System.out.println("2. Serie");
+        System.out.print("Ingrese una opción (1 o 2): ");
+        String tipoContenido = "";
+        while (true) {
+            try {
+                int opcionTipo = scanner.nextInt();
+                scanner.nextLine(); // Limpiar el buffer
+                if (opcionTipo == 1) {
+                    tipoContenido = "movie";
+                    break;
+                } else if (opcionTipo == 2) {
+                    tipoContenido = "series";
+                    break;
+                } else {
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Por favor, ingrese una opción válida (1 o 2).");
+                scanner.nextLine(); // Limpiar el buffer
+            }
+        }
+
+        // Preparar los parámetros de búsqueda
+        Vector<String> searchParams = new Vector<>();
+        searchParams.add("type: " + tipoContenido); // Tipo de contenido ingresado por el usuario
+
+        // Realizar la búsqueda y mostrar los resultados
+        Collection<SearchResult> resultados = serviceManager.buscarEnServicio(query, searchParams);
+        mostrarResultados(resultados);
+    }
+
+    /**
+     * Realiza una búsqueda avanzada en el catálogo de Streaming Availability.
+     *
+     * Permite al usuario especificar filtros como tipo de contenido, región y plataforma de streaming.
+     */
+
+    private void buscarEnCatalogoAvanzado2() {
+        serviceManager.setServicio("StreamingAvailability");
+
+        System.out.println("\n=== Búsqueda Avanzada en el Catálogo de Streaming Availability ===");
+
+        // Solicitar el término de búsqueda
+        System.out.print("Ingrese el término de búsqueda (nombre de la película o serie): ");
+        String query = scanner.nextLine().toLowerCase();
+
+        // Selección de tipo de contenido
+        System.out.println("Seleccione el tipo de contenido:");
+        System.out.println("1. Película");
+        System.out.println("2. Serie");
+        System.out.print("Ingrese una opción (1 o 2): ");
+        String tipoContenido = "";
+        while (true) {
+            try {
+                int opcionTipo = scanner.nextInt();
+                scanner.nextLine(); // Limpiar el buffer
+                if (opcionTipo == 1) {
+                    tipoContenido = "movie";
+                    break;
+                } else if (opcionTipo == 2) {
+                    tipoContenido = "series";
+                    break;
+                } else {
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Por favor, ingrese una opción válida (1 o 2).");
+                scanner.nextLine(); // Limpiar el buffer
+            }
+        }
+
+        // Mostrar opciones de región
+        System.out.println("\nRegiones disponibles:");
+        System.out.println("US: Estados Unidos");
+        System.out.println("CA: Canadá");
+        System.out.println("GB: Gran Bretaña");
+        System.out.println("FR: Francia");
+        System.out.println("JP: Japón");
+        System.out.println("MX: México");
+        System.out.println("ES: España");
+        System.out.print("Seleccione una región (ingrese el código): ");
+        String region = scanner.nextLine().toLowerCase();
+
+        int sourceId = 0;
+
+
+        // Realizar la búsqueda avanzada
+        Collection<SearchResult> resultados = serviceManager.buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
+        mostrarResultados(resultados);
+    }
+
 
     private void guardarEnHistorial(int codigoUsuario, int codigoProveedor, int codigoPelicula, int codigoSerie, String descripcion, String enlace, String plataforma, String titulo, String tipo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(HISTORIAL_ARCHIVO, true))) {

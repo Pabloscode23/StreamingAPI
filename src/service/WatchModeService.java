@@ -24,7 +24,7 @@ import org.json.JSONObject;
  */
 public class WatchModeService implements StreamingService {
 
-    private static final String API_KEY = "0zt8HW3qrm5NNzODmrBD69uxQ9ktJs67J7arVXKx";
+    private static final String API_KEY = "SLG2ee4P9rV0wO746kfKydrAus9ccZA6UfVjtATO";
     private static final String BASE_URL = "https://api.watchmode.com/v1/";
 
     /**
@@ -65,7 +65,8 @@ public class WatchModeService implements StreamingService {
                     "&search_field=name&search_value=" + encodedQuery +
                     "&types=" + tipoContenido;
 
-            System.out.println("URL de Búsqueda: " + endpoint); // Imprimir URL de búsqueda
+            //System.out.println("URL de Búsqueda: " + endpoint); // Imprimir URL de búsqueda
+
             URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -112,94 +113,67 @@ public class WatchModeService implements StreamingService {
     }
 
     /**
-     * Realiza una búsqueda avanzada en WatchMode con filtros específicos.
+     * Realiza una búsqueda avanzada en la API de WatchMode con filtros específicos.
      *
      * @param query         Término de búsqueda, como el nombre de una película o serie.
-     * @param tipoContenido Tipo de contenido (ej., "movie" para películas o "tv_movie" para series).
-     * @param region        Código de región para limitar la búsqueda (ej., "US" para Estados Unidos).
-     * @param sourceId      ID de la plataforma de streaming (ej., ID específico para Netflix, Hulu, etc.).
-     * @return Una colección de objetos `SearchResult` que cumplen con los filtros avanzados especificados.
+     * @param tipoContenido Tipo de contenido (e.g., "movie", "tv_show").
+     * @param region        Región del contenido (e.g., "US", "ES").
+     * @param sourceId      ID de la plataforma de streaming.
+     * @return Una colección de objetos `SearchResult` que representan los resultados de búsqueda obtenidos.
      */
+
     public Collection<SearchResult> buscarConFiltrosAvanzados(String query, String tipoContenido, String region, int sourceId) {
         Collection<SearchResult> resultados = new ArrayList<>();
 
         try {
-            String endpoint = BASE_URL + "search/?apiKey=" + API_KEY +
-                    "&search_field=name&search_value=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString()) +
+            // Formatear la consulta
+            String encodedQuery = URLEncoder.encode(capitalizeWords(query), StandardCharsets.UTF_8.toString());
+
+            // Construcción de la URL de búsqueda
+            String searchEndpoint = BASE_URL + "search/?apiKey=" + API_KEY +
+                    "&search_field=name&search_value=" + encodedQuery +
                     "&types=" + tipoContenido;
 
-            URL url = new URL(endpoint);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+            System.out.println("URL de Búsqueda: " + searchEndpoint);
+            JSONObject searchResponse = realizarPeticion(searchEndpoint);
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String inputLine;
+            if (searchResponse != null) {
+                JSONArray titleResults = searchResponse.optJSONArray("title_results");
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                JSONArray titleResults = jsonResponse.getJSONArray("title_results");
-
-                if (!titleResults.isEmpty()) {
+                if (titleResults != null && !titleResults.isEmpty()) {
+                    // Obtener el ID del primer resultado
                     JSONObject firstResult = titleResults.getJSONObject(0);
                     int id = firstResult.getInt("id");
-                    String name = firstResult.getString("name");
-                    int year = firstResult.getInt("year");
+                    String title = firstResult.getString("name");
 
-                    String detailsEndpoint = BASE_URL + "title/" + id + "/details/?apiKey=" + API_KEY;
-                    URL detailsUrl = new URL(detailsEndpoint);
-                    HttpURLConnection detailsConn = (HttpURLConnection) detailsUrl.openConnection();
-                    detailsConn.setRequestMethod("GET");
+                    // Construcción de la URL de detalles
+                    String detailsEndpoint = BASE_URL + "title/" + id + "/details/?apiKey=" + API_KEY + "&append_to_response=sources";
+                    System.out.println("URL de Detalles: " + detailsEndpoint);
+                    JSONObject detailsResponse = realizarPeticion(detailsEndpoint);
 
-                    String plotOverview = "Sinopsis no disponible";
-                    if (detailsConn.getResponseCode() == 200) {
-                        BufferedReader detailsIn = new BufferedReader(new InputStreamReader(detailsConn.getInputStream()));
-                        StringBuilder detailsResponse = new StringBuilder();
-                        while ((inputLine = detailsIn.readLine()) != null) {
-                            detailsResponse.append(inputLine);
-                        }
-                        detailsIn.close();
+                    if (detailsResponse != null) {
+                        // Extraer información relevante
+                        String plotOverview = detailsResponse.optString("plot_overview", "Sinopsis no disponible");
+                        JSONArray sourcesArray = detailsResponse.optJSONArray("sources");
 
-                        JSONObject detailsJsonResponse = new JSONObject(detailsResponse.toString());
-                        plotOverview = detailsJsonResponse.optString("plot_overview", plotOverview);
-                    }
-
-                    String sourcesEndpoint = BASE_URL + "title/" + id + "/sources/?apiKey=" + API_KEY + "&regions=" + region;
-                    URL sourcesUrl = new URL(sourcesEndpoint);
-                    HttpURLConnection sourcesConn = (HttpURLConnection) sourcesUrl.openConnection();
-                    sourcesConn.setRequestMethod("GET");
-
-                    if (sourcesConn.getResponseCode() == 200) {
-                        BufferedReader sourcesIn = new BufferedReader(new InputStreamReader(sourcesConn.getInputStream()));
-                        StringBuilder sourcesResponse = new StringBuilder();
-                        while ((inputLine = sourcesIn.readLine()) != null) {
-                            sourcesResponse.append(inputLine);
-                        }
-                        sourcesIn.close();
-
-                        JSONArray sourcesArray = new JSONArray(sourcesResponse.toString());
-                        SearchResult baseResult = new SearchResult(name, plotOverview, "URL no disponible", "Plataforma base", "Tipo base");
-
-                        for (int i = 0; i < sourcesArray.length(); i++) {
-                            JSONObject source = sourcesArray.getJSONObject(i);
-                            if (source.getInt("source_id") == sourceId) {
-                                SearchResult result = baseResult.clone();
-                                result = new SearchResult(result.getTitulo(), result.getDescripcion(), source.optString("web_url", "URL no disponible"), source.getString("name"), source.getString("type"));
-                                resultados.add(result);
+                        if (sourcesArray != null) {
+                            for (int i = 0; i < 1; i++) {
+                                JSONObject source = sourcesArray.getJSONObject(i);
+                                if (source.getInt("source_id") == sourceId) {
+                                    resultados.add(new SearchResult(
+                                            title, // Título del contenido
+                                            plotOverview, // Descripción (sinopsis)
+                                            source.optString("web_url", "URL no disponible"), // Enlace
+                                            source.optString("name", "Plataforma desconocida"), // Plataforma
+                                            source.optString("type", "Tipo desconocido") // Tipo de pago
+                                    ));
+                                }
                             }
                         }
                     }
                 } else {
                     System.out.println("No se encontraron resultados para la búsqueda avanzada.");
                 }
-            } else {
-                System.out.println("Error en la respuesta de la API: " + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,4 +182,45 @@ public class WatchModeService implements StreamingService {
         return resultados;
     }
 
+    /**
+     * Realiza una petición HTTP a la API de WatchMode y retorna la respuesta como un objeto JSON.
+     *
+     * @param endpoint URL de la petición a realizar.
+     * @return Un objeto `JSONObject` que representa la respuesta de la API.
+     * @throws Exception Si ocurre algún error durante la petición.
+     */
+
+    private JSONObject realizarPeticion(String endpoint) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(endpoint).openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == 200) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                return new JSONObject(response.toString());
+            }
+        } else {
+            System.out.println("Error en la respuesta de la API: " + responseCode);
+        }
+        return null;
+    }
+
+    // Método para capitalizar las palabras de una cadena
+    private String capitalizeWords(String str) {
+        String[] words = str.split(" ");
+        StringBuilder capitalized = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                capitalized.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1).toLowerCase())
+                        .append(" ");
+            }
+        }
+        return capitalized.toString().trim();
+    }
 }

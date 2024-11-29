@@ -1,5 +1,6 @@
 package service;
 
+import factory.StreamingAvailabilityServiceFactory;
 import factory.StreamingServiceFactory;
 import factory.WatchModeServiceFactory;
 import model.SearchResult;
@@ -98,6 +99,9 @@ public class StreamingServiceManager {
             case "WatchMode":
                 factory = new WatchModeServiceFactory();
                 break;
+            case "StreamingAvailability":
+                factory = new StreamingAvailabilityServiceFactory();
+                break;
             default:
                 System.out.println("Servicio no reconocido.");
                 return;
@@ -136,8 +140,8 @@ public class StreamingServiceManager {
      * @return Una colección de resultados de búsqueda que cumplen con los filtros.
      */
     public Collection<SearchResult> buscarConFiltrosAvanzados(String query, String tipoContenido, String region, int sourceId) {
-        if (servicioActual != null) {
-            return ((WatchModeService) servicioActual).buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
+        if (this.servicioActual != null) {
+            return this.servicioActual.buscarConFiltrosAvanzados(query, tipoContenido, region, sourceId);
         } else {
             System.out.println("No se ha seleccionado ningún servicio.");
             return new Vector<>();
@@ -160,5 +164,7 @@ public class StreamingServiceManager {
             return new Vector<>();
         }
     }
+
+
 
 }
