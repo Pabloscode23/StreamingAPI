@@ -1,22 +1,23 @@
 package observer;
 
+
 /**
- * Observer que procesa las actualizaciones de las releases desde la API de WatchMode.
+ * Observer que procesa las actualizaciones de las releases desde la API de StreamAvailability.
  * Este observer se encarga de recibir las notificaciones y extraer los detalles específicos de cada release.
  */
-public class ReleaseObserver implements Observer {
+public class ReleaseObserverStreamingAv implements Observer {
 
     /**
      * Método que es llamado cuando se recibe una notificación de actualización.
      * Este método procesa el mensaje JSON y llama a un método para imprimir los detalles de las releases.
      *
-     * @param message El mensaje JSON que contiene las releases desde WatchMode.
+     * @param message El mensaje JSON que contiene las releases desde WatchMode y StreamAvailability.
      */
     @Override
     public void update(String message) {
         // Procesamos el mensaje JSON
         System.out.println("=======================================");
-        System.out.println("   Nuevas releases desde WatchMode:   ");
+        System.out.println("   Nuevas releases desde StreamAvailability:   ");
         System.out.println("=======================================");
 
         // Llamamos a un método para imprimir solo los datos que nos interesan
@@ -29,7 +30,7 @@ public class ReleaseObserver implements Observer {
      * Este método está diseñado para procesar hasta las primeras 5 releases, extrayendo los campos de interés
      * como el título, la plataforma, la fecha de ingreso a la plataforma, el tipo y la URL de la imagen.
      *
-     * @param message El mensaje JSON que contiene las releases desde WatchMode.
+     * @param message El mensaje JSON que contiene las releases desde WatchMode y StreamAvailability.
      */
     private void printReleaseDetails(String message) {
         // Suponiendo que el mensaje contiene un campo "releases" que es una lista de objetos JSON
@@ -43,21 +44,22 @@ public class ReleaseObserver implements Observer {
             String release = releases[i];
 
             // Extraer los campos específicos que necesitamos
-            String title = extractField(release, "title");
-            String sourceName = extractField(release, "source_name");
-            String releaseDate = extractField(release, "source_release_date");
-            String type = extractField(release, "type");
-            String posterUrl = extractField(release, "poster_url");
+            String type = extractField(release, "itemType");
+            String showType = extractField(release, "showType");
+            String changeType = extractField(release, "changeType");
+            String title = extractField(release, "tittle");
+            String link = extractField(release, "link");
+            String overview = extractField(release, "overview");
 
             // Imprimir los datos extraídos
             System.out.println("""
                     ========= Release %d =========
                     """.formatted(i + 1));
+            System.out.println("  Tipo programa/película: " + showType);
+            System.out.println("  Clasificación: " + changeType);
             System.out.println("  Título: " + title);
-            System.out.println("  Plataforma: " + sourceName);
-            System.out.println("  Fecha de ingreso a la plataforma: " + releaseDate);
-            System.out.println("  Tipo: " + type);
-            System.out.println("Fotografía: " + posterUrl);
+            System.out.println("Link: " + link);
+            System.out.println("Descripción: " + overview);
         }
     }
 
@@ -82,3 +84,4 @@ public class ReleaseObserver implements Observer {
         return "No disponible"; // Si no encontramos el campo
     }
 }
+

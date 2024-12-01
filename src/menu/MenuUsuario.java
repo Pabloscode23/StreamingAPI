@@ -1,9 +1,7 @@
 package menu;
 
+import observer.*;
 import service.StreamingServiceManager;
-import observer.WatchModeSubject;
-import observer.ReleaseObserver;
-import observer.WatchModeAPI;
 import model.SearchResult;
 import facade.AuthFacade;
 import classes.Usuario;
@@ -26,21 +24,62 @@ import state.*;
 public class MenuUsuario {
 
     // Atributos para WatchMode
-    private WatchModeSubject watchModeSubject; // Para gestionar los observadores
-    private WatchModeAPI watchModeAPI;         // Para obtener las notificaciones desde la API
+    /**
+     * Gestor de observadores para WatchMode.
+     */
+    private WatchModeSubject watchModeSubject;
+
+    /**
+     * API para obtener notificaciones de WatchMode.
+     */
+    private WatchModeAPI watchModeAPI;
+
+    /**
+     * Menú principal de la aplicación.
+     */
     private CompositeMenu menuPrincipal;
-    // Otros atributos
+
+    /**
+     * Gestor de observadores para StreamAvailability.
+     */
+    private StreamAvailabilitySubject streamAvailabilitySubject;
+
+    /**
+     * API para obtener notificaciones de disponibilidad de contenido.
+     */
+    private StreamAvailabilityAPI streamAvailabilityAPI;
+
+    /**
+     * Facade para manejar la autenticación del usuario.
+     */
     private AuthFacade authFacade;
+
+    /**
+     * Gestor de servicios de streaming.
+     */
     private StreamingServiceManager serviceManager;
+
+    /**
+     * Escáner para recibir entradas del usuario.
+     */
     private Scanner scanner;
+
+    /**
+     * Objeto que representa al usuario autenticado.
+     */
     private Usuario usuario;
+
+    /**
+     * Contexto de autenticación que maneja el estado de sesión.
+     */
     private ContextoAutenticacion contextoAutenticacion;
+
 
     private static final String HISTORIAL_ARCHIVO = "historial_visto.txt"; // Ruta del archivo de historial
 
     /**
      * Constructor de la clase `MenuUsuario`.
-     *
+     * <p>
      * Inicializa los servicios necesarios para la autenticación, el manejo del catálogo
      * de streaming, y la gestión de notificaciones, así como los elementos para interactuar
      * con el usuario.
@@ -52,6 +91,7 @@ public class MenuUsuario {
      * @param contextoAutenticacion Contexto para gestionar el estado de autenticación del usuario.
      */
 
+
     public MenuUsuario(AuthFacade authFacade, StreamingServiceManager serviceManager, Scanner scanner, Usuario usuario, ContextoAutenticacion contextoAutenticacion) {
         this.authFacade = authFacade;
         this.serviceManager = serviceManager;
@@ -59,20 +99,22 @@ public class MenuUsuario {
         this.usuario = usuario;
         this.contextoAutenticacion = contextoAutenticacion;
 
-        // Inicializar WatchMode
+        // Inicializar WatchMode y StreamAvailability
         this.watchModeSubject = new WatchModeSubject(); // Crear el sujeto para las notificaciones
         ReleaseObserver observer = new ReleaseObserver(); // Crear el observador
+        ReleaseObserverStreamingAv observerSA = new ReleaseObserverStreamingAv();
         this.watchModeSubject.addObserver(observer); // Registrar el observador
-
         this.watchModeAPI = new WatchModeAPI(watchModeSubject); // Crear la API de WatchMode y asociarla con el sujeto
+        this.streamAvailabilitySubject = new StreamAvailabilitySubject(); // Crear el sujeto para las notificaciones
+        this.streamAvailabilityAPI = new StreamAvailabilityAPI(streamAvailabilitySubject); // Crear la API de StreamAvailability y asociarla con el sujeto
+        this.streamAvailabilitySubject.addObserver(observerSA); // Registrar el observador
+
     }
-
-
 
     // Métodos para ver las notificaciones (llama a la API)
 
 
-    // Métodos getters y setters (como ya tienes)
+    // Métodos getters y setters
     public AuthFacade getAuthFacade() {
         return authFacade;
     }
@@ -184,66 +226,102 @@ public class MenuUsuario {
             }
 
             switch (opcion) {
+                // Caso 1: Administrar cuenta
                 case 1:
+                    // Verifica si el estado del contexto de autenticación es "EstadoAutenticado"
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        // Si está autenticado, crea un objeto CuentaManager y llama al método para administrar la cuenta
                         CuentaManager cuentaManager = new CuentaManager(authFacade, serviceManager, scanner, usuario);
                         cuentaManager.administrarCuenta();
                     } else {
+                        // Si no está autenticado, muestra un mensaje indicando que debe iniciar sesión
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 2: Mostrar sugerencias y buscar en catálogo sencillo
                 case 2:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        // Si está autenticado, muestra sugerencias y realiza una búsqueda sencilla en el catálogo
                         mostrarSugerencias();
                         buscarEnCatalogoSencillo();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 3: Mostrar sugerencias y buscar en catálogo avanzado
                 case 3:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        // Si está autenticado, muestra sugerencias y realiza una búsqueda avanzada en el catálogo
                         mostrarSugerencias();
                         buscarEnCatalogoAvanzado();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 4: Mostrar sugerencias y buscar en otro catálogo sencillo
                 case 4:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo sencillo
                         mostrarSugerencias();
                         buscarEnCatalogoSencillo2();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 5: Mostrar sugerencias y buscar en otro catálogo avanzado
                 case 5:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+                        // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo avanzado
                         mostrarSugerencias();
                         buscarEnCatalogoAvanzado2();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 6: Ver historial
                 case 6:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        verHistorial();  // Ver el historial del usuario
+                        // Si está autenticado, llama al método para ver el historial
+                        verHistorial();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+
+                // Caso 7: Ver notificaciones
                 case 7:
+                    // Verifica si está autenticado
                     if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        verNotificaciones();  // Ver notificaciones / actualizaciones de contenido
+                        verNotificaciones();
                     } else {
+                        // Si no está autenticado, muestra un mensaje de acceso denegado
                         System.out.println("Acceso denegado. Inicie sesión.");
                     }
                     break;
+                // Caso 8: Cerrar sesión
                 case 8:
                     System.out.println("\nCerrando sesión...");
                     contextoAutenticacion.cerrarSesion();
                     sesionActiva = false;
                     break;
+
                 default:
+                    // Si el valor de la opción no coincide con ninguno de los casos, muestra un mensaje de opción inválida
                     System.out.println("\nOpción inválida, intente nuevamente.");
             }
         }
@@ -251,7 +329,7 @@ public class MenuUsuario {
 
     /**
      * Realiza una búsqueda sencilla en el catálogo de WatchMode.
-     *
+     * <p>
      * Solicita al usuario un término de búsqueda y muestra los resultados encontrados.
      */
     private void buscarEnCatalogoSencillo() {
@@ -270,7 +348,7 @@ public class MenuUsuario {
 
     /**
      * Realiza una búsqueda avanzada en el catálogo de WatchMode.
-     *
+     * <p>
      * Permite al usuario especificar filtros como tipo de contenido, región y plataforma de streaming.
      */
     private void buscarEnCatalogoAvanzado() {
@@ -325,7 +403,7 @@ public class MenuUsuario {
 
     /**
      * Realiza una búsqueda sencilla en el catálogo de Streaming Availability.
-     *
+     * <p>
      * Solicita al usuario un término de búsqueda y muestra los resultados encontrados.
      */
 
@@ -374,7 +452,7 @@ public class MenuUsuario {
 
     /**
      * Realiza una búsqueda avanzada en el catálogo de Streaming Availability.
-     *
+     * <p>
      * Permite al usuario especificar filtros como tipo de contenido, región y plataforma de streaming.
      */
 
@@ -434,17 +512,23 @@ public class MenuUsuario {
 
 
     private void guardarEnHistorial(int codigoUsuario, int codigoProveedor, int codigoPelicula, int codigoSerie, String descripcion, String enlace, String plataforma, String titulo, String tipo) {
+        // Verificamos el código del usuario antes de escribirlo
+        System.out.println("Código Usuario al guardar en el historial: " + codigoUsuario);
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(HISTORIAL_ARCHIVO, true))) {
+            // Formateamos la cadena del historial para incluir los detalles
             String historial = String.format("Código Usuario: %d, Código Proveedor: %d, Código Película: %d, Código Serie: %d, Descripción: %s, Enlace: %s, Plataforma: %s, Título: %s, Tipo: %s\n",
                     codigoUsuario, codigoProveedor, codigoPelicula, codigoSerie, descripcion, enlace, plataforma, titulo, tipo);
+            // Escribimos el historial en el archivo
             writer.write(historial);
             System.out.println("Historial guardado exitosamente.");
         } catch (IOException e) {
+            // Capturamos cualquier error de escritura en el archivo
             System.out.println("Error al guardar en el historial: " + e.getMessage());
         }
     }
 
-    // Modificación en la función para mostrar resultados
+    // Método para mostrar los resultados de búsqueda y guardar el historial
     private void mostrarResultados(Collection<SearchResult> resultados) {
         if (resultados.isEmpty()) {
             System.out.println("No se encontraron resultados para la búsqueda.");
@@ -455,11 +539,8 @@ public class MenuUsuario {
             }
 
             // Preguntar al usuario si desea ver algún resultado
-
             System.out.print("\n¿Quieres ver alguna de estas opciones? (S/N): ");
-
             String respuesta = scanner.nextLine().trim().toLowerCase();
-
 
             if (respuesta.equals("s")) {
                 // Suponiendo que el usuario quiere ver el primer resultado (esto puede cambiar)
@@ -472,14 +553,12 @@ public class MenuUsuario {
                 String titulo = resultadoSeleccionado.getTitulo();
                 String tipo = resultadoSeleccionado.getTipo();
 
-                // Obtener el nombre del usuario
+                // Obtener el nombre del usuario (usamos nombre en vez de código)
                 String nombreUsuario = usuario.getNombre();  // Suponiendo que el objeto usuario tiene el nombre
-                int codigoUsuario = usuario.getCodigo();
 
-
-                // Crear el registro de historial como una cadena de texto
-                String historial = String.format("Usuario: %s, Codigo: %s, Título: %s, Tipo: %s, Descripción: %s, Enlace: %s, Plataforma: %s\n"
-                        , nombreUsuario, codigoUsuario, titulo, tipo, descripcion, enlace, plataforma);
+                // Crear el registro de historial como una cadena de texto (usamos nombre de usuario)
+                String historial = String.format("Usuario: %s, Título: %s, Tipo: %s, Descripción: %s, Enlace: %s, Plataforma: %s\n",
+                        nombreUsuario, titulo, tipo, descripcion, enlace, plataforma);
 
                 // Guardar en el archivo de historial
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(HISTORIAL_ARCHIVO, true))) {
@@ -491,46 +570,55 @@ public class MenuUsuario {
             } else {
                 System.out.println("No se guardó el historial.");
             }
-
         }
     }
 
+
+    // Método para mostrar el historial de un usuario autenticado
     private void verHistorial() {
-        int codigoUsuario = usuario.getCodigo(); // Obtenemos el código del usuario que ha hecho login
+        String nombreUsuario = usuario.getNombre(); // Obtener el nombre del usuario que ha hecho login
         boolean historialVacio = true;  // Inicializamos como verdadero, si no encontramos el historial cambiará a falso
+        int contador = 1;  // Contador para numerar las películas/series
 
         try (BufferedReader reader = new BufferedReader(new FileReader(HISTORIAL_ARCHIVO))) {
             String linea;
+            boolean encabezadoImpreso = false;  // Bandera para imprimir el encabezado solo una vez
 
             // Leemos el archivo línea por línea
             while ((linea = reader.readLine()) != null) {
 
-                // Verificamos si la línea contiene "Codigo: " (que indica la información del usuario)
-                if (linea.contains("Codigo: ")) {
+                // Verificamos si la línea contiene "Usuario: " (que indica la información del usuario)
+                if (linea.contains("Usuario: ")) {
                     // Separamos la línea en partes usando la coma como delimitador
                     String[] partes = linea.split(",");
 
-                    // Buscamos el campo que contiene el código del usuario
+                    // Buscamos el campo que contiene el nombre del usuario
                     for (String parte : partes) {
-                        // Si encontramos "Codigo: ", extraemos el código
-                        if (parte.trim().startsWith("Codigo: ")) {
-                            // Extraemos el código eliminando el texto "Codigo: "
-                            String codigoHistorialString = parte.trim().replace("Codigo: ", "").trim();
+                        // Si encontramos "Usuario: ", extraemos el nombre
+                        if (parte.trim().startsWith("Usuario: ")) {
+                            // Extraemos el nombre eliminando el texto "Usuario: "
+                            String nombreHistorial = parte.trim().replace("Usuario: ", "").trim();
 
-                            try {
-                                // Convertimos el código del historial a número
-                                int codigoHistorial = Integer.parseInt(codigoHistorialString);
-
-                                // Comparamos el código del historial con el código del usuario actual
-                                if (codigoHistorial == codigoUsuario) {
-                                    // Si coinciden, mostramos el historial completo
-                                    System.out.println("Historial encontrado: " + linea);  // Muestra toda la línea
-                                    historialVacio = false;
-                                    // No rompemos el bucle, seguimos buscando más entradas para este usuario
+                            // Comparamos el nombre del historial con el nombre del usuario actual
+                            if (nombreHistorial.equals(nombreUsuario)) {
+                                // Si no se ha impreso el encabezado aún, lo imprimimos
+                                if (!encabezadoImpreso) {
+                                    System.out.println("===============================================");
+                                    System.out.println("Historial de: " + nombreUsuario);
+                                    System.out.println("===============================================");
+                                    encabezadoImpreso = true;  // Marcamos que el encabezado ya fue impreso
                                 }
-                            } catch (NumberFormatException e) {
-                                // Si ocurre un error al convertir el código, lo mostramos para depuración
-                                System.out.println("Error: " + e.getMessage());
+
+                                // Si coinciden, mostramos las películas/series con numeración
+                                System.out.println("Pelicula/Serie " + contador + ":");
+                                System.out.println("Título: " + getCampoDeHistorial(linea, "Título: "));
+                                System.out.println("Tipo: " + getCampoDeHistorial(linea, "Tipo: "));
+                                System.out.println("Descripción: " + getCampoDeHistorial(linea, "Descripción: "));
+                                System.out.println("Enlace: " + getCampoDeHistorial(linea, "Enlace: "));
+                                System.out.println("Plataforma: " + getCampoDeHistorial(linea, "Plataforma: "));
+                                System.out.println("-----------------------------------------------");
+                                contador++;  // Incrementamos el contador para el siguiente ítem
+                                historialVacio = false;
                             }
                         }
                     }
@@ -548,42 +636,86 @@ public class MenuUsuario {
         }
     }
 
+
+    // Método auxiliar para extraer los campos del historial
+    private String getCampoDeHistorial(String linea, String campo) {
+        // Extrae el valor correspondiente a cada campo, usando el nombre del campo como referencia
+        if (linea.contains(campo)) {
+            String[] partes = linea.split(",");
+            for (String parte : partes) {
+                if (parte.trim().startsWith(campo)) {
+                    return parte.trim().replace(campo, "").trim();
+                }
+            }
+        }
+        return "No disponible";
+    }
+
+
+
+    /**
+     * Método para ver las notificaciones del usuario.
+     * Comprueba si el usuario está autenticado antes de realizar llamadas a las APIs externas
+     * para obtener las notificaciones relevantes.
+     * Si el usuario no está autenticado, deniega el acceso.
+     */
+
     public void verNotificaciones() {
+        // Verifica si el usuario está autenticado comprobando su estado
         if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-            // Llamar al método para obtener las notificaciones desde la API
-            watchModeAPI.fetchReleases();  // Este método hará la llamada a la API
+            // Si está autenticado, se llaman a los métodos para obtener las notificaciones desde las API correspondientes
+            watchModeAPI.fetchReleases();  // Este método hará la llamada a la API para obtener los lanzamientos de WatchMode
+            streamAvailabilityAPI.fetchReleases(); // Este método hará la llamada a la API para obtener los lanzamientos de StreamAvailability
         } else {
+            // Si no está autenticado, muestra un mensaje de acceso denegado
             System.out.println("Acceso denegado. Inicie sesión.");
         }
     }
 
     public void mostrarSugerencias() {
+        // Muestra un mensaje indicando que se están generando recomendaciones personalizadas
         System.out.println("\n=== Generando Recomendaciones Personalizadas ===");
 
-        String nombreUsuario = usuario.getNombre(); // Código del usuario autenticado
-        List<String> titulosVistos = new ArrayList<>(); // Para almacenar los títulos del historial
+        // Obtiene el nombre del usuario autenticado
+        String nombreUsuario = usuario.getNombre(); // Nombre del usuario autenticado
+        // Crea una lista para almacenar los títulos del historial de visualización
+        List<String> titulosVistos = new ArrayList<>(); // Lista que almacenará los títulos vistos por el usuario
 
+        // Intenta leer el archivo que contiene el historial de visualización del usuario
         try (BufferedReader reader = new BufferedReader(new FileReader(HISTORIAL_ARCHIVO))) {
+            // Declara una variable para leer cada línea del archivo
             String linea;
 
+            // Lee cada línea del archivo hasta que no haya más
             while ((linea = reader.readLine()) != null) {
+                // Si la línea contiene la palabra "Usuario: ", significa que es una línea relevante
                 if (linea.contains("Usuario: ")) {
+                    // Divide la línea en partes usando la coma como delimitador
                     String[] partes = linea.split(",");
+
+                    // Itera sobre las partes de la línea para encontrar información sobre el usuario
                     for (String parte : partes) {
+                        // Si la parte comienza con "Usuario: ", se extrae el nombre del usuario
                         if (parte.trim().startsWith("Usuario: ")) {
+                            // Extrae el nombre del usuario, eliminando "Usuario: " al principio
                             String usuarioHistorialString = parte.trim().replace("Usuario: ", "").trim();
 
                             try {
+                                // Si el nombre del usuario coincide con el del usuario autenticado, procesamos el historial
                                 if (usuarioHistorialString.equals(nombreUsuario)) {
-                                    // Extraemos el título del contenido visto
+                                    // Busca los títulos de los contenidos vistos por el usuario
                                     for (String detalle : partes) {
+                                        // Si la parte comienza con "Título: ", extrae el título
                                         if (detalle.trim().startsWith("Título: ")) {
+                                            // Extrae el título, eliminando "Título: " al principio
                                             String titulo = detalle.trim().replace("Título: ", "").trim();
+                                            // Agrega el título a la lista de títulos vistos
                                             titulosVistos.add(titulo);
                                         }
                                     }
                                 }
                             } catch (NumberFormatException e) {
+                                // Si ocurre un error al procesar el historial, se muestra el mensaje de error
                                 System.out.println("Error al procesar el historial: " + e.getMessage());
                             }
                         }
@@ -591,18 +723,21 @@ public class MenuUsuario {
                 }
             }
         } catch (IOException e) {
+            // Si ocurre un error al leer el archivo, se muestra el mensaje de error
             System.out.println("Error al leer el historial: " + e.getMessage());
         }
 
-        // Si no hay títulos vistos, mostramos un mensaje
+        // Si la lista de títulos vistos está vacía, significa que no hay títulos en el historial del usuario
         if (titulosVistos.isEmpty()) {
             System.out.println("No se encontraron títulos en el historial del usuario.");
-            return;
+            return; // Salir del método si no hay títulos
         }
 
-        // Buscar recomendaciones para cada título del historial
+        // Si hay títulos vistos, busca recomendaciones basadas en cada título
         for (String titulo : titulosVistos) {
+            // Muestra un mensaje indicando que está buscando contenido relacionado con el título
             System.out.println("\nBuscando contenido relacionado con: " + titulo);
+            // Llama a un método para buscar recomendaciones basadas en el título
             buscarRecomendacionesPorTitulo(titulo);
         }
     }

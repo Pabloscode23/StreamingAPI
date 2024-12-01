@@ -6,7 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.Set;
 import java.util.HashSet;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -26,7 +25,7 @@ import java.util.Vector;
  */
 public class StreamingAvailabilityService implements StreamingService {
 
-    private static final String API_KEY = "2687fdf46bmsh7077904e173045dp1ac4aejsnd83d84e71a60";
+    private static final String API_KEY = "e25ca44cc9msh249c64cee83fd44p16d3a0jsnf4e10890a32f";
     private static final String BASE_URL = "https://streaming-availability.p.rapidapi.com/shows/search/";
 
     /**
@@ -50,7 +49,6 @@ public class StreamingAvailabilityService implements StreamingService {
      * @param configParams Vector con parámetros de configuración (tipo de contenido, región, etc.).
      * @return Una colección de resultados de búsqueda representados como objetos `SearchResult`.
      */
-
     @Override
     public Collection<SearchResult> buscar(String query, Vector<String> configParams) {
         Collection<SearchResult> resultados = new ArrayList<>();
@@ -75,8 +73,6 @@ public class StreamingAvailabilityService implements StreamingService {
                     "&show_type=" + tipoContenido +
                     "&output_language=" + outputLanguage +
                     "&country=" + region;
-
-            //System.out.println("URL generada: " + endpoint);
 
             URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -160,7 +156,6 @@ public class StreamingAvailabilityService implements StreamingService {
      * @param sourceId      El ID de la plataforma de streaming (opcional).
      * @return Una colección de resultados de búsqueda representados como objetos `SearchResult`.
      */
-
     @Override
     public Collection<SearchResult> buscarConFiltrosAvanzados(String query, String tipoContenido, String region, int sourceId) {
         Collection<SearchResult> resultados = new ArrayList<>();
@@ -268,6 +263,4 @@ public class StreamingAvailabilityService implements StreamingService {
 
         return resultados;
     }
-
-
 }
