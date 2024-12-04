@@ -5,17 +5,19 @@ import service.StreamingServiceManager;
 import model.SearchResult;
 import facade.AuthFacade;
 import classes.Usuario;
+
 import java.util.*;
 import java.io.*;
+
 import state.*;
 
 /**
  * Clase que representa el menú principal de interacción para un usuario autenticado.
- *
+ * <p>
  * Proporciona opciones para administrar la cuenta, realizar búsquedas de contenido
- * en diferentes catálogos de streaming, ver notificaciones y gestionar el historial
+ * en diferentes catálogos de streaming, ver nov y gestionar el historial
  * de visualizaciones.
- *
+ * <p>
  * También integra funcionalidades avanzadas como recomendaciones basadas en el historial
  * del usuario y notificaciones en tiempo real de nuevos lanzamientos utilizando observadores
  * de WatchMode.
@@ -162,16 +164,19 @@ public class MenuUsuario {
      * Verifica si la sesión ha expirado antes de ejecutar cualquier acción.
      */
     public void mostrarMenu() {
-        boolean sesionActiva = true;
-        while (sesionActiva) {
-            // Verificamos si la sesión ha expirado antes de continuar
-            contextoAutenticacion.accederServicio();
+// Verificar si el usuario está autenticado antes de ingresar al bucle
+        if (!(contextoAutenticacion.getEstado() instanceof EstadoAutenticado)) {
+            contextoAutenticacion.cerrarSesion();
+            return; // Salir del método si el usuario no está autenticado
+        }
 
-            if (contextoAutenticacion.getEstado() instanceof EstadoSesionExpirada) {
-                System.out.println("Sesión expirada. Inicie sesión nuevamente.");
-                sesionActiva = false;
-                break;
-            }
+        while (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
+            // Verificamos si la sesión ha expirado antes de continuar
+            if (!(contextoAutenticacion.getEstado() instanceof EstadoAutenticado)) {
+                contextoAutenticacion.cerrarSesion(); // Cerrar sesión
+                return; // Salir del método si la sesión ha expirado
+            }else{
+            contextoAutenticacion.accederServicio();
 
             menuPrincipal = new CompositeMenu("\n=== Menú Usuario ===");
 
@@ -182,7 +187,7 @@ public class MenuUsuario {
             ComponenteMenu buscarCatalogoSencillo2 = new ElementoMenu("4. Busqueda Sencilla - Streaming Availability");
             ComponenteMenu buscarCatalogoAvanzado2 = new ElementoMenu("5. Busqueda Avanzada - Streaming Availability");
             ComponenteMenu verHistorial = new ElementoMenu("6. Ver Mi Historial");
-            ComponenteMenu verNotificaciones = new ElementoMenu("7. Ver Notificaciones");
+            ComponenteMenu verNotificaciones = new ElementoMenu("7. Ver Novedades");
             ComponenteMenu cerrarSesion = new ElementoMenu("8. Cerrar Sesión");
 
             // Crear un submenú si es necesario
@@ -225,105 +230,75 @@ public class MenuUsuario {
                 }
             }
 
+            if (!(contextoAutenticacion.getEstado() instanceof EstadoAutenticado)) {
+                contextoAutenticacion.cerrarSesion();
+                return; // Salir si la sesión ha expirado
+            }
             switch (opcion) {
                 // Caso 1: Administrar cuenta
                 case 1:
-                    // Verifica si el estado del contexto de autenticación es "EstadoAutenticado"
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, crea un objeto CuentaManager y llama al método para administrar la cuenta
-                        CuentaManager cuentaManager = new CuentaManager(authFacade, serviceManager, scanner, usuario);
-                        cuentaManager.administrarCuenta();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje indicando que debe iniciar sesión
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, crea un objeto CuentaManager y llama al método para administrar la cuenta
+                    CuentaManager cuentaManager = new CuentaManager(authFacade, serviceManager, scanner, usuario);
+                    cuentaManager.administrarCuenta();
+
                     break;
 
                 // Caso 2: Mostrar sugerencias y buscar en catálogo sencillo
                 case 2:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, muestra sugerencias y realiza una búsqueda sencilla en el catálogo
-                        mostrarSugerencias();
-                        buscarEnCatalogoSencillo();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, muestra sugerencias y realiza una búsqueda sencilla en el catálogo
+                    mostrarSugerencias();
+                    buscarEnCatalogoSencillo();
+
                     break;
 
                 // Caso 3: Mostrar sugerencias y buscar en catálogo avanzado
                 case 3:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, muestra sugerencias y realiza una búsqueda avanzada en el catálogo
-                        mostrarSugerencias();
-                        buscarEnCatalogoAvanzado();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, muestra sugerencias y realiza una búsqueda avanzada en el catálogo
+                    mostrarSugerencias();
+                    buscarEnCatalogoAvanzado();
+
                     break;
 
                 // Caso 4: Mostrar sugerencias y buscar en otro catálogo sencillo
                 case 4:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo sencillo
-                        mostrarSugerencias();
-                        buscarEnCatalogoSencillo2();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo sencillo
+                    mostrarSugerencias();
+                    buscarEnCatalogoSencillo2();
                     break;
 
                 // Caso 5: Mostrar sugerencias y buscar en otro catálogo avanzado
                 case 5:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo avanzado
-                        mostrarSugerencias();
-                        buscarEnCatalogoAvanzado2();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, muestra sugerencias y realiza una búsqueda en otro catálogo avanzado
+                    mostrarSugerencias();
+                    buscarEnCatalogoAvanzado2();
+
                     break;
 
                 // Caso 6: Ver historial
                 case 6:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        // Si está autenticado, llama al método para ver el historial
-                        verHistorial();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+
+                    // Si está autenticado, llama al método para ver el historial
+                    verHistorial();
+
                     break;
 
-                // Caso 7: Ver notificaciones
+                // Caso 7: Ver novedades
                 case 7:
-                    // Verifica si está autenticado
-                    if (contextoAutenticacion.getEstado() instanceof EstadoAutenticado) {
-                        verNotificaciones();
-                    } else {
-                        // Si no está autenticado, muestra un mensaje de acceso denegado
-                        System.out.println("Acceso denegado. Inicie sesión.");
-                    }
+                    verNotificaciones();
+
                     break;
                 // Caso 8: Cerrar sesión
                 case 8:
                     System.out.println("\nCerrando sesión...");
                     contextoAutenticacion.cerrarSesion();
-                    sesionActiva = false;
                     break;
 
-                default:
-                    // Si el valor de la opción no coincide con ninguno de los casos, muestra un mensaje de opción inválida
-                    System.out.println("\nOpción inválida, intente nuevamente.");
-            }
+            }}
         }
     }
 
@@ -650,7 +625,6 @@ public class MenuUsuario {
         }
         return "No disponible";
     }
-
 
 
     /**

@@ -120,6 +120,6 @@ public class ContextoAutenticacion {
     public boolean isSesionExpirada() {
         if (tiempoAutenticacion == null) return true;
         Duration duracion = Duration.between(tiempoAutenticacion, LocalDateTime.now());
-        return duracion.toMinutes() > 1; // Expiración de sesión en 5 minutos
+        return duracion.toMinutes() > 1; // Expiración de sesión en 2 minutos
     }
 }

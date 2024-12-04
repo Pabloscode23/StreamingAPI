@@ -64,15 +64,14 @@ https://mavenlibs.com/jar/file/org.json/json
 
 ### Ubicacion de los patrones empleados
 
-- Factory Method: carpeta factory
-- Abstract Method: WatchModeAdapterFactory y WatchModeServiceFactory
-
+- Factory Method: carpeta factory, se implementa el SASF en StreamingServiceManager
+- Abstract Method: ---------WatchModeAdapterFactory y WatchModeServiceFactory
 - Prototype: SearchResult y se implementa en WatchModeService
 - Singleton: StreamingServiceManager y carpeta database
 - Adapter: StreamingServiceAdapter y WatchModeAdapter
 - Composite: Carpeta menu, en MenuUsuario se emplea el patron directamente
-- decorator: Carpeta decorator
-- Facade: WatchModeService
+- Decorator: Carpeta decorator
+- Facade: carpeta Facade 
 - Proxy: carpeta proxy e implementacion en iniciarSesion del Main
 - Strategy: StreamingService
 - Observer: carpeta observer
