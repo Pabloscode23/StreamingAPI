@@ -1,8 +1,9 @@
 package service;
 
-import factory.StreamingAvailabilityServiceFactory;
+import factory.AbstractStreamingFactory;
+import factory.StreamingAvailabilityFactory;
 import factory.StreamingServiceFactory;
-import factory.WatchModeServiceFactory;
+import factory.WatchModeFactory;
 import model.SearchResult;
 import model.StreamingService;
 import observer.Observer;
@@ -86,31 +87,40 @@ public class StreamingServiceManager {
             observador.update(mensaje);
         }
     }
-
     /**
-     * Establece el servicio de streaming a utilizar, utilizando la fábrica correspondiente.
+     * Establece el servicio de streaming a utilizar, seleccionando la fábrica correspondiente
+     * según el tipo de servicio especificado.
      *
-     * @param tipoServicio El tipo de servicio de streaming (por ejemplo, "WatchMode").
+     * Este método utiliza el patrón de diseño **Abstract Factory** para crear un servicio
+     * de streaming adecuado basado en el tipo de servicio proporcionado. Dependiendo del
+     * tipo de servicio, se selecciona la fábrica correspondiente para crear una instancia
+     * del servicio de streaming.
+     *
+     * @param tipoServicio El tipo de servicio de streaming que se desea utilizar.
+     *                     Puede ser "WatchMode" o "StreamingAvailability".
+     * @throws IllegalArgumentException Si el tipo de servicio no es reconocido.
      */
     public void setServicio(String tipoServicio) {
-        StreamingServiceFactory factory;
+        AbstractStreamingFactory factory = null;
 
+        // Elegir la fábrica adecuada según el tipo de servicio
         switch (tipoServicio) {
             case "WatchMode":
-                factory = new WatchModeServiceFactory();
+                factory = new WatchModeFactory();  // Usar la fábrica concreta para WatchMode
                 break;
             case "StreamingAvailability":
-                factory = new StreamingAvailabilityServiceFactory();
+                factory = new StreamingAvailabilityFactory();  // Usar la fábrica concreta para StreamingAvailability
                 break;
             default:
                 System.out.println("Servicio no reconocido.");
                 return;
         }
 
-        // Crear el servicio utilizando la fábrica
-        this.servicioActual = factory.crearServicio();
-        if (this.servicioActual != null) {
-            notificarObservadores("Servicio seleccionado: " + tipoServicio);  // Notificar a los observadores
+        // Crear el servicio usando la fábrica seleccionada
+        servicioActual = factory.crearServicio();
+
+        if (servicioActual != null) {
+            notificarObservadores("Servicio seleccionado: " + tipoServicio);
         } else {
             System.out.println("No se pudo crear el servicio: " + tipoServicio);
         }

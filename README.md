@@ -64,8 +64,8 @@ https://mavenlibs.com/jar/file/org.json/json
 
 ### Ubicacion de los patrones empleados
 
-- Factory Method: carpeta factory, se implementa el SASF en StreamingServiceManager
-- Abstract Method: ---------WatchModeAdapterFactory y WatchModeServiceFactory
+- Factory Method: carpeta factory, se implementa el StreamingServiceFactory y en StreamingServiceManager
+- Abstract Method: en AbstractStreamingFactory 
 - Prototype: SearchResult y se implementa en WatchModeService
 - Singleton: StreamingServiceManager y carpeta database
 - Adapter: StreamingServiceAdapter y WatchModeAdapter
