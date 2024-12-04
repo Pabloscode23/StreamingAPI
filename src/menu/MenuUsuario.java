@@ -1,5 +1,9 @@
 package menu;
 
+import classes.Pelicula;
+import decorator.CalificacionDecorator;
+import decorator.PeliculaAdapter;
+import decorator.PeliculaInterface;
 import observer.*;
 import service.StreamingServiceManager;
 import model.SearchResult;
@@ -10,6 +14,7 @@ import java.util.*;
 import java.io.*;
 
 import state.*;
+
 
 /**
  * Clase que representa el menú principal de interacción para un usuario autenticado.
@@ -186,9 +191,10 @@ public class MenuUsuario {
             ComponenteMenu buscarCatalogoAvanzado = new ElementoMenu("3. Busqueda Avanzada - WatchMode");
             ComponenteMenu buscarCatalogoSencillo2 = new ElementoMenu("4. Busqueda Sencilla - Streaming Availability");
             ComponenteMenu buscarCatalogoAvanzado2 = new ElementoMenu("5. Busqueda Avanzada - Streaming Availability");
-            ComponenteMenu verHistorial = new ElementoMenu("6. Ver Mi Historial");
-            ComponenteMenu verNotificaciones = new ElementoMenu("7. Ver Novedades");
-            ComponenteMenu cerrarSesion = new ElementoMenu("8. Cerrar Sesión");
+            ComponenteMenu calificarPeliculaOSerie = new ElementoMenu("6. Calificar Pelicula o Serie");
+            ComponenteMenu verHistorial = new ElementoMenu("7. Ver Mi Historial");
+            ComponenteMenu verNotificaciones = new ElementoMenu("8. Ver Novedades");
+            ComponenteMenu cerrarSesion = new ElementoMenu("9. Cerrar Sesión");
 
             // Crear un submenú si es necesario
             CompositeMenu subMenuCuenta = new CompositeMenu("Submenú de Cuenta");
@@ -200,6 +206,7 @@ public class MenuUsuario {
             menuPrincipal.agregarComponente(buscarCatalogoAvanzado);
             menuPrincipal.agregarComponente(buscarCatalogoSencillo2);
             menuPrincipal.agregarComponente(buscarCatalogoAvanzado2);
+            menuPrincipal.agregarComponente(calificarPeliculaOSerie);
             menuPrincipal.agregarComponente(verHistorial);
             menuPrincipal.agregarComponente(verNotificaciones);
             menuPrincipal.agregarComponente(cerrarSesion);
@@ -217,7 +224,7 @@ public class MenuUsuario {
                     scanner.nextLine(); // Limpiar el buffer
 
                     // Validar que la opción esté dentro del rango esperado
-                    if (opcion < 1 || opcion > 8) {
+                    if (opcion < 1 || opcion >9) {
                         System.out.println("Opción inválida, intente nuevamente.");
                     } else {
                         opcionValida = true; // Opción válida, salir del bucle
@@ -278,22 +285,26 @@ public class MenuUsuario {
                     buscarEnCatalogoAvanzado2();
 
                     break;
-
-                // Caso 6: Ver historial
                 case 6:
+                    // Si está autenticado, llama al método para calificar una película o serie
+                    calificarPeliculaOSerie();
+                    break;
+
+                // Caso 7 Ver historial
+                case 7:
 
                     // Si está autenticado, llama al método para ver el historial
                     verHistorial();
 
                     break;
 
-                // Caso 7: Ver novedades
-                case 7:
+                // Caso 8 Ver novedades
+                case 8:
                     verNotificaciones();
 
                     break;
-                // Caso 8: Cerrar sesión
-                case 8:
+                // Caso 9 Cerrar sesión
+                case 9:
                     System.out.println("\nCerrando sesión...");
                     contextoAutenticacion.cerrarSesion();
                     break;
@@ -548,6 +559,67 @@ public class MenuUsuario {
         }
     }
 
+    // Metodo para calificar una pelicula o serie
+    private void calificarPeliculaOSerie() {
+        final String NOMBRE_ARCHIVO = "calificaciones.txt";
+        Scanner scanner = new Scanner(System.in);
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("=== Calificar Película o Serie ===");
+            System.out.println("1. Calificar una película o serie");
+            System.out.println("2. Ver películas calificadas");
+            System.out.println("3. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar buffer
+
+            switch (opcion) {
+                case 1:
+                    // Solicitar nombre de la película o serie
+                    System.out.print("Ingrese el nombre de la película o serie: ");
+                    String nombrePelicula = scanner.nextLine();
+
+                    // Crear instancia y decorar con funcionalidad de calificación
+                    Pelicula peliculaBase = new Pelicula(0, nombrePelicula);
+                    PeliculaInterface peliculaAdaptada = new PeliculaAdapter(peliculaBase);
+                    CalificacionDecorator peliculaDecorada = new CalificacionDecorator(peliculaAdaptada);
+
+                    System.out.print("Ingrese una calificación (0-10): ");
+                    double calificacion = scanner.nextDouble();
+
+                    try {
+                        peliculaDecorada.agregarCalificacion(calificacion);
+                        System.out.println("Calificación agregada con éxito.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    break;
+
+                case 2:
+                    // Leer y mostrar las películas calificadas desde el archivo
+                    System.out.println("=== Películas Calificadas ===");
+                    try (BufferedReader lector = new BufferedReader(new FileReader(NOMBRE_ARCHIVO))) {
+                        String linea;
+                        while ((linea = lector.readLine()) != null) {
+                            System.out.println(linea);
+                        }
+                    } catch (IOException e) {
+                        System.out.println("No se pudieron cargar las películas calificadas: " + e.getMessage());
+                    }
+                    break;
+
+                case 3:
+                    continuar = false;
+                    break;
+
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+            }
+            System.out.println();
+        }
+    }
 
     // Método para mostrar el historial de un usuario autenticado
     private void verHistorial() {
