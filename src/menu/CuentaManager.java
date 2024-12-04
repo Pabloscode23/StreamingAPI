@@ -54,8 +54,7 @@ public class CuentaManager {
             System.out.println("\n=== Administrar Cuenta ===");
             System.out.println("1. Ver Información de la Cuenta");
             System.out.println("2. Cambiar Contraseña");
-            System.out.println("3. Manejar Suscripciones");
-            System.out.println("4. Volver");
+            System.out.println("3. Volver");
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
             scanner.nextLine();
@@ -68,10 +67,6 @@ public class CuentaManager {
                     cambiarContrasena();
                     break;
                 case 3:
-                    SuscripcionManager suscripcionManager = new SuscripcionManager(scanner, usuario, authFacade.getStreamingServiceManager());
-                    suscripcionManager.manejarSuscripciones();
-                    break;
-                case 4:
                     continuar = false;
                     break;
                 default:
