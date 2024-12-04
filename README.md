@@ -70,7 +70,7 @@ https://mavenlibs.com/jar/file/org.json/json
 - Singleton: StreamingServiceManager y carpeta database
 - Adapter: StreamingServiceAdapter y WatchModeAdapter
 - Composite: Carpeta menu, en MenuUsuario se emplea el patron directamente
-- Decorator: Carpeta decorator
+- Decorator: Carpeta decorator e implementado en MenuUsuario
 - Facade: carpeta Facade 
 - Proxy: carpeta proxy e implementacion en iniciarSesion del Main
 - Strategy: StreamingService
