@@ -181,6 +181,11 @@ public class Main {
         }
         System.out.print("Contraseña: ");
         String contrasena = scanner.nextLine();
+        while (contrasena.length() <= 4) {
+            System.out.println("La contraseña debe tener más de 4 caracteres. Inténtelo de nuevo.");
+            System.out.print("Contraseña: ");
+            contrasena = scanner.nextLine();
+        }
 
         if (authFacade.registrarUsuario(nombreCompleto, correo, contrasena)) {
             System.out.println("\nRegistro exitoso. Ahora puede iniciar sesión.");
