@@ -4,6 +4,7 @@
 Universidad Cenfotec
 
 Curso: Programación con Patrones
+
 Profesor: Valentín Secades Méndez
 
 ## Grupo 1

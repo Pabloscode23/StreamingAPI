@@ -2,3 +2,5 @@
 2,diego selva,diego@gmail.com,diego2006
 2,Administrador 1,admin,admin
 3,Isabella Nassar,isa@gmail.com,123
+5,Juanito Ledezma,juanito@correo.com,1212
+6,asd asdasd,asdasd,23
