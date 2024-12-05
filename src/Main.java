@@ -174,6 +174,11 @@ public class Main {
 
         System.out.print("Correo: ");
         String correo = scanner.nextLine();
+        while (!correo.contains("@") || !correo.contains(".")) {
+            System.out.println("Correo inválido. Asegúrese de que incluye '@' y un dominio válido.");
+            System.out.print("Correo: ");
+            correo = scanner.nextLine();
+        }
         System.out.print("Contraseña: ");
         String contrasena = scanner.nextLine();
 
